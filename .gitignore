@@ -2,3 +2,5 @@
 *.pyc
 *.so
 doc/_build
+core/pybn
+core/pyre
