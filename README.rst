@@ -79,8 +79,6 @@ optimal decisions for treating deteriorated reinforced concrete
 structures. The temporal evolvement of structures can also be represented and
 analyzed within this framework.
 
-.. note::
-
    Keywords: Bayesian networks, corrosion, degradation, probabilistic
    modeling, probability, reinforced concrete, structural reliability
    analysis;
@@ -99,5 +97,6 @@ CoRe is based on the Master's thesis:
 Getting started
 ===============
 
-This guide provides all the information needed to install CoRe, code a
-probabilistic model, run the sampler, save and visualize the results.
+This `Documentation`_ provides all the information needed to install CoRe, code a probabilistic model, run the sampler, save and visualize the results.
+
+.. _`Documentation`: http://hackl.github.io/core/
