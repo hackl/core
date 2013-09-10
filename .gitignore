@@ -4,3 +4,11 @@
 doc/_build
 core/pybn
 core/pyre
+dat/carbonation/
+dat/chloride/
+dat/corrosion/
+dat/failure/
+dat/propagation/
+dat/resistance/
+dat/results/
+plots/
