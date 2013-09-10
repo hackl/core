@@ -12,7 +12,6 @@ Contents:
 
    README
    install
-   tutorial
    theory
    model
    references

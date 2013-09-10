@@ -2,15 +2,15 @@
 Installation
 ************
 
-:Date: 11 May 2013
+:Date: September 2013
 :Authors: Jürgen Hackl
 :Contact: hackl.j@gmx.at
-:Web site: http://github.com/hackl/pyre
+:Web site: http://github.com/hackl/core
 :Copyright: This document has been placed in the public domain.
-:License: PyRe is released under the GNU General Public Licence.
-:Version: 5.0.1
+:License: CoRe is released under the GNU General Public Licence.
+:Version: 1.0.1
 
-PyRe is known to run on Mac OS X, Linux and Windows, but in theory should be
+CoRe is known to run on Mac OS X, Linux and Windows, but in theory should be
 able to work on just about any platform for which Python, a Fortran compiler
 and the NumPy SciPy, and Math modules are available. However, installing some
 extra depencies can greatly improve PyRe's performance and versatility. The
@@ -21,11 +21,15 @@ through the installation process.
 Dependencies
 ============
 
-PyMC requires some prerequisite packages to be present on the system.
+CoRe requires some prerequisite packages to be present on the system.
 Fortunately, there are currently only a few hard dependencies, and all are
 freely available online.
 
-* `Python`_ version 2.6 or later.
+* `PyRe`_ : Structural Reliability with Python.
+
+* `PyBN`_ : Simple Bayesian Networks with Python.
+
+* `Python`_ version 2.7 or later.
 
 * `NumPy`_ : The fundamental scientific programming package, it
   provides a multidimensional array type and many useful functions for
@@ -36,6 +40,9 @@ freely available online.
 * `IPython`_ (optional): An enhanced interactive Python shell and an
   architecture for interactive parallel computing.
 
+.. _`PyRe`: http://github.com/hackl/pyre
+
+.. _`PyBN`: http://github.com/hackl/pybn
 
 .. _`Python`: http://www.python.org/.
 
@@ -44,7 +51,6 @@ freely available online.
 .. _`SciPy`: http://www.scipy.org/
 
 .. _`IPython`: http://ipython.scipy.org/
-
 
 
 Installation using EasyInstall
@@ -82,9 +88,9 @@ Development version
 You can check out the development version of the code from the `GitHub`_
 repository::
 
-    git clone git://github.com/hackl/pyre.git
+    git clone git://github.com/hackl/core.git
 
-.. _`GitHub`: https://github.com/hackl/pyre
+.. _`GitHub`: https://github.com/hackl/core
 
 
 Bugs and feature requests
@@ -94,6 +100,6 @@ Report problems with the installation, bugs in the code or feature request at
 the `issue tracker`_. Comments and questions are welcome and should be
 addressed to `Jürgen Hackl`_.
 
-.. _`issue tracker`: http://github.com/hackl/pyre/issues
+.. _`issue tracker`: http://github.com/hackl/core/issues
 
 .. _`Jürgen Hackl`: hackl.j@gmx.at
