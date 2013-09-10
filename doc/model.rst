@@ -16,7 +16,7 @@ consequences and probabilities, which are depict in probabilistic
 models. [Faber2009]_
 
 .. note::
-   Probabilistic Model (Benjamin and Cornell, 1970) 
+   Probabilistic Model (Benjamin and Cornell, 1970)
 
    A probabilistic model remains an abstraction until it has been related to
    observations of physical phenomenon.
@@ -43,6 +43,9 @@ Material Properties
 The description of each material property consists of a mathematical model and
 random variables. Functional relationships between the variables may be part
 of the material model. [JCSS2002]_
+
+.. automodule:: core.settings
+   :members:
 
 Concrete
 --------

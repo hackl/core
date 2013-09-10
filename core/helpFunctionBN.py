@@ -1,26 +1,19 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 
-# import sys
 import os
 import numpy as np
 import math
-# import random
-# from fractions import Fraction
-# import scipy.stats.stats as st
 import scipy.stats
 import matplotlib.pyplot as plt
-# import pylab
-# from scipy.stats import norm
-# import scipy.special as spec
 
 from chloride import Chloride
 from concrete import Concrete
 from environment import Environment
 from geometrie import Geometrie
 from propagation import Propagation
+
 from settings import *
-#from py2GeNIe import *
 from pybn import *
 
 def getUniformDistribution(values):
@@ -110,9 +103,6 @@ def getDistributionForTable(table,bin_number,Range = [None,None], trunc = None):
     minValue = Range[0]
     maxValue = Range[1]
 
-  # print 'min', minValue
-  # print 'max',maxValue
-
   val = [[] for i in range(len(table))]
   prob = [[] for i in range(len(table))]
   width = [[] for i in range(len(table))]
@@ -125,7 +115,6 @@ def getDistributionForTable(table,bin_number,Range = [None,None], trunc = None):
   for i in range(len(prob)):
     sum = np.sum(prob[i])
     for ii in range(len(prob[0])):
-      #pr.append(np.round(prob[i][ii],round_digits))
       pr.append(prob[i][ii])
 
   return val, pr, width
@@ -153,7 +142,7 @@ def getTableOfFailure(calc,val,prob,width):
     else:
       a = b
       b = round(val[i] + width*.5,round_digits)#+0.000009
-      
+
     tof = []
     for ii in range(len(calc)):
       value = round(calc[ii],round_digits)

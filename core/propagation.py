@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
-# Time-stamp: <Mon 2013-09-09 17:15 juergen>
+# Time-stamp: <Tue 2013-09-10 10:25 juergen>
 
 # import sys
 import numpy as np
@@ -368,7 +368,6 @@ class Propagation(object):
 
     if analysis == 'DistributionAnalysis':
       Analysis = DistributionAnalysis(options)
-
 
     self.data = Analysis.getDistributionData()
     self.bins = Analysis.getBins()

@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
-# Time-stamp: <Mon 2013-09-09 18:40 juergen>
+# Time-stamp: <Tue 2013-09-10 08:30 juergen>
 
 import numpy as np
 import math
@@ -36,13 +36,15 @@ class Resistance(object):
     - reinforcement
     - geometry
     - propagation
+    - corrosion
   """
 
-  def __init__(self,concrete,reinforcement,geometrie,propagation):
+  def __init__(self,concrete,reinforcement,geometrie,propagation,corrosion):
     self.concrete = concrete
     self.reinforcement = reinforcement
     self.geometrie = geometrie
     self.propagation = propagation
+    self.corrosion = corrosion
     self.uniform_capacity_length = 500
     self.delta_time = None
 
@@ -286,17 +288,17 @@ class Resistance(object):
       - list. :math:`R` distribution data for the resistance
     """
 
-    Vcorr,theta = self.getCorrosionRate(options)
+    Vcorr,theta = self.corrosion.getCorrosionRate(options)
     Vcorrv = self.getFunctionValue('Vcorr',Vcorr)
-    R = self.getPittingFactor()
+    R = self.corrosion.getPittingFactor()
     if delta_time == None:
-      t = self.getDeltaTime()
+      t = self.corrosion.getDeltaTime()
     else:
       t = delta_time
 
     Do = self.reinforcement.getBarDiameter()
 
-    ec = self.getEmpiricalCoefficient()
+    ec = self.corrosion.getEmpiricalCoefficient()
 
     ME = Lognormal('ME',1,0.1)
 
@@ -339,16 +341,16 @@ class Resistance(object):
       - float. :math:`p_f` probability of failure
     """
 
-    Vcorr,theta = self.getCorrosionRate(options)
+    Vcorr,theta = self.corrosion.getCorrosionRate(options)
     Vcorrv = self.getFunctionValue('Vcorr',Vcorr)
-    R = self.getPittingFactor()
+    R = self.corrosion.getPittingFactor()
     if delta_time == None:
-      t = self.getDeltaTime()
+      t = self.corrosion.getDeltaTime()
     else:
       t = delta_time
 
     Do = self.reinforcement.getBarDiameter()
-    ec = self.getEmpiricalCoefficient()
+    ec = self.corrosion.getEmpiricalCoefficient()
 
     ME = Lognormal('ME',1,0.1)
 

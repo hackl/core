@@ -12,8 +12,15 @@ from corrosion import Pitting
 from resistance import Resistance
 
 def setValues():
+  """Default settings
+
+  :Returns:
+    - Default settings for the probabilistic models for degradation of concrete.
+  """
+
+  # Concrete settings
   concrete = Concrete('C25/30')
-  
+
   concrete.setWCratio(0.4)
   # values: (0.3),0.4,(0.45),0.5
 
@@ -23,25 +30,27 @@ def setValues():
   concrete.setGrade(45)
   # values: 45,40,25,35
 
+  # Reinforcement settings
   reinforcement = Reinforcement('S500')
   reinforcement.setYieldStress(500)
   # values: all
-  
+
   reinforcement.setDiameter(16)
   # values: (8),10,16,27
 
   reinforcement.setBars(1)
   # values: all
-  
+
+  # Geometry settings
   geometrie = Geometrie('Beam')
   geometrie.setCover(30) # values: all
   geometrie.setBeamWidth(350)
   geometrie.setBeamHeight(550)
   geometrie.setBeamLength(5000)
-  
+
+  # Environment settings
   environment = Environment()
 
-#  environment.setZone('Tidal')
   environment.setZone('Submerged')
   # values: 'Submerged','Tidal','Splash','Atmospheric'
 
@@ -58,17 +67,21 @@ def setValues():
   environment.setShelter('Unsheltered')
   # 'Sheltered','Unsheltered'
 
+  # Chloride
   chloride = Chloride(concrete,geometrie,environment)
 
+  # Carbonation
   carbonation = Carbonation(concrete,geometrie,environment)
-  
-  # rate = Propagation2(environment)
+
+  # Propagation
   rate = Propagation(environment)
 
+  # Corrosion
   pitting = Pitting(reinforcement,rate)
   # pitting.setDeltaTime(50)
   # values: all
 
-  resistance = Resistance(concrete,reinforcement,geometrie,rate)
-  
+  # Resistance
+  resistance = Resistance(concrete,reinforcement,geometrie,rate,pitting)
+
   return concrete, reinforcement, geometrie, environment, chloride, carbonation, rate, pitting, resistance
