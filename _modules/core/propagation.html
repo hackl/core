@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.propagation &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for core.propagation</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python -tt</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c"># Time-stamp: &lt;Tue 2013-09-10 10:25 juergen&gt;</span>
+
+<span class="c"># import sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span>
+<span class="c">#from distribution import *</span>
+
+<span class="kn">from</span> <span class="nn">pyre</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="Propagation"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation">[docs]</a><span class="k">class</span> <span class="nc">Propagation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Porpagation of corrosion</span>
+
+<span class="sd">  The propagation period is defined as the period that extends from the moment</span>
+<span class="sd">  at which steel depassivation is produced and the oxide mixture, known as</span>
+<span class="sd">  “rust”, develops progressively to the structure reaches an unacceptable</span>
+<span class="sd">  deterioration. This period can be determined from the so-called attack</span>
+<span class="sd">  penetration function. This attack penetration function, :math:`P_x(t)`,</span>
+<span class="sd">  represents the loss of rebar diameter at the time :math:`t` and it can be</span>
+<span class="sd">  later implemented in the damage functions of the structural performance.</span>
+
+<span class="sd">  In a rigorous form, the attack penetration function, :math:`P_x(t)`, takes</span>
+<span class="sd">  the expression:</span>
+
+<span class="sd">  .. math:: P_x(t) = \\int_{t_i}^{t} V_{corr}(\\tau)d\\tau</span>
+<span class="sd">     :label: eq92</span>
+
+<span class="sd">  where :math:`V_{corr}(\\tau)` is the corrosion rate at the instant</span>
+<span class="sd">  :math:`\\tau` , and :math:`t_i` the initiation period. The function thus</span>
+<span class="sd">  gives the progress of corrosion with time as a function of the corrosion</span>
+<span class="sd">  rate :math:`V_{corr}` [:math:`mm/yr`].</span>
+
+<span class="sd">  The main difficulty regarding the modeling of the damage function</span>
+<span class="sd">  :math:`P_x(t)` lies in the establishment of the value of :math:`V_{corr}`,</span>
+<span class="sd">  able to represent the particular corrosion process. There are three</span>
+<span class="sd">  possibilities of establishing :math:`V_{corr}`:</span>
+<span class="sd">  </span>
+<span class="sd">     1. To assume values in function only of the exposure classes (and not of the type of attack)</span>
+<span class="sd">     2. To estimate :math:`V_{corr}`,a from direct measurements of :math:`I_{corr}` (in specimens for new structures or on-site for existing ones)</span>
+<span class="sd">     3. To use empirical expressions based on a variable governing the process (resistivity was selected, it is a positive decision, because it also governs the Initiation period, but it might be selected other one).</span>
+
+<span class="sd">  .. note::</span>
+
+<span class="sd">     Here method 3 is taken by using the Gehlen and Nilsson approach!</span>
+
+<span class="sd">  :Attributes:</span>
+<span class="sd">    - environment</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="n">environment</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">chloride_induced_corrosion</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Vcorr</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Propagation.setChlorideInducedCorrosion"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.setChlorideInducedCorrosion">[docs]</a>  <span class="k">def</span> <span class="nf">setChlorideInducedCorrosion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">boolean</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set boolean for chloride induced corrosion.</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - boolean (boolean):  chloride induced corrosion True or False</span>
+
+<span class="sd">    :Default:</span>
+<span class="sd">      - boolean == True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">chloride_induced_corrosion</span> <span class="o">=</span> <span class="n">boolean</span>
+</div>
+<div class="viewcode-block" id="Propagation.getChlorideInducedCorrosion"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getChlorideInducedCorrosion">[docs]</a>  <span class="k">def</span> <span class="nf">getChlorideInducedCorrosion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the boolean for chloride induced corrosion.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - boolean.  for chloride induced corrosion</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chloride_induced_corrosion</span>
+</div>
+<div class="viewcode-block" id="Propagation.getModelUncertaintyFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getModelUncertaintyFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getModelUncertaintyFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the model uncertainty factor.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       Nilsson and Gehlen propose to use a constant :math:`m_o = 882` for the</span>
+<span class="sd">       time being. The scatter then is included into the other parameters in</span>
+<span class="sd">       the corrosion rate model. Should mo be better quantified in the near</span>
+<span class="sd">       future, it is simple to change this constant into a stochastic</span>
+<span class="sd">       parameter.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - int.  :math:`m_o` constant for corrosion rate versus resistivity in</span>
+<span class="sd">        [:math:`\\mu m \\Omega m /yr`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_uncertainty_factor</span> <span class="o">=</span> <span class="mi">882</span>
+    <span class="k">return</span> <span class="n">model_uncertainty_factor</span>
+</div>
+<div class="viewcode-block" id="Propagation.getChlorideCorrosionRateFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getChlorideCorrosionRateFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getChlorideCorrosionRateFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the chloride corrosion rate factor.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable. :math:`F_{Cl}` chloride corrosion rate factor in [-]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+      <span class="n">chloride_corrosion_rate_factor</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">mu</span> <span class="o">=</span> <span class="mf">0.62</span>
+      <span class="n">sigma</span> <span class="o">=</span> <span class="mf">1.35</span>
+      <span class="n">theta</span> <span class="o">=</span> <span class="mf">1.09</span>
+      <span class="n">chloride_corrosion_rate_factor</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;FCl&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chloride_corrosion_rate_factor</span><span class="p">,</span><span class="n">theta</span>
+</div>
+<div class="viewcode-block" id="Propagation.getGalvanicFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getGalvanicFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getGalvanicFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the galvanic factor.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       Further study is needed to quantify the galvanic effect factor. This</span>
+<span class="sd">       should be done by carefully study of the expected deterioration</span>
+<span class="sd">       mechanism the detailing and placement of the rebars and the surrounding</span>
+<span class="sd">       environmental condition.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       If the model is restricted to ordinary cases of carbonation with</span>
+<span class="sd">       microcell corrosion, the galvanic factor is not relevant. Consequently,</span>
+<span class="sd">       :math:`F_{Galv} = 1`.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - int. :math:`F_{Galv}` galvanic effect factor in [-]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">galvanic_factor</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">galvanic_factor</span>
+</div>
+<div class="viewcode-block" id="Propagation.getOxygenFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getOxygenFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getOxygenFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the oxygen factor.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       :math:`F_{O2}` is a factor expressing the effect of availability of</span>
+<span class="sd">       oxygen to the corrosion process. Since data is very limited a</span>
+<span class="sd">       statistical quantification cannot be made. However, since the supply of</span>
+<span class="sd">       oxygen usually is believed not to be a limiting factor, except in</span>
+<span class="sd">       submerged concrete, a crude alternative could be used: :math:`F_{O2} =</span>
+<span class="sd">       1` in all cases except when the concrete is totally submerged when</span>
+<span class="sd">       :math:`F_{O2}` should be zero. :math:`F_{O2} = 0`</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - int. :math:`F_{O2}` oxygen availability factor in [-]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">oxygen_factor</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">oxygen_factor</span>
+</div>
+<div class="viewcode-block" id="Propagation.getStandardResistivity"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getStandardResistivity">[docs]</a>  <span class="k">def</span> <span class="nf">getStandardResistivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the standard resistivity.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       At the moment only OPC-Concrete is available!</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable.  :math:`\\rho_o` potential electrolytical resistivity measured</span>
+<span class="sd">        with the standard test method at an age of 28 d in [:math:`\\Omega m`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="mi">77</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">standard_resistivity</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;po&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">standard_resistivity</span>
+</div>
+<div class="viewcode-block" id="Propagation.getAgeFactorResistivity"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getAgeFactorResistivity">[docs]</a>  <span class="k">def</span> <span class="nf">getAgeFactorResistivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the age factor resistivity.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       At the moment only OPC-Concrete is available!</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable.  :math:`n` ageing factor of the resistivity in [-]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="mf">0.23</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.04</span>
+    <span class="n">age_factor_resistivity</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;n&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">age_factor_resistivity</span>
+</div>
+<div class="viewcode-block" id="Propagation.getCuringFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getCuringFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getCuringFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the curing factor.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       The curing factor was taken as a constant due to the lack of available</span>
+<span class="sd">       data. Further research is needed to quantify :math:`k_c`.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - int.  :math:`k_c` curing factor for curing different from the standard</span>
+<span class="sd">        curing in [-]</span>
+
+<span class="sd">    :Raises:</span>
+<span class="sd">      - ValueError: An error occurred if the input value is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">curing_factor</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">curing_factor</span>
+</div>
+<div class="viewcode-block" id="Propagation.getTestMethodFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getTestMethodFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getTestMethodFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the test method factor.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       Simplified implemented at the moment!</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - int.  :math:`k_t` test method factor if another test method is used to</span>
+<span class="sd">        determine the potential electrolytical resistivity :math:`\\rho_o` in</span>
+<span class="sd">        [-]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">test_method_factor</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">test_method_factor</span>
+</div>
+<div class="viewcode-block" id="Propagation.getTemperatureFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getTemperatureFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getTemperatureFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the temperature factor.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable. :math:`K` value of the temperature factor for the electrolytical</span>
+<span class="sd">        resistivity in [-]</span>
+<span class="sd">      - float. :math:`T` the temperature</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">getTemperature</span><span class="p">()</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">T</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+      <span class="n">K</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;K&#39;</span><span class="p">,</span><span class="mf">0.073</span><span class="p">,</span><span class="mf">0.015</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">T</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
+      <span class="n">K</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;K&#39;</span><span class="p">,</span><span class="mf">0.025</span><span class="p">,</span><span class="mf">0.001</span><span class="p">)</span>
+
+    <span class="c"># temperature_factor = (1+K*(T-20))**(-1)</span>
+    <span class="c"># return temperature_factor</span>
+    <span class="k">return</span> <span class="n">K</span><span class="p">,</span><span class="n">T</span>
+</div>
+<div class="viewcode-block" id="Propagation.getChlorideFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getChlorideFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getChlorideFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the chloride factor.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       Simplified implemented at the moment!</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable.  :math:`k_{T,Cl}` chloride factor for the electrolytical</span>
+<span class="sd">        resistivity in [-]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">()</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+      <span class="n">chloride_factor</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">mu</span> <span class="o">=</span> <span class="mf">0.72</span>
+      <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.11</span>
+      <span class="n">chloride_factor</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;kRCl&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chloride_factor</span>
+</div>
+<div class="viewcode-block" id="Propagation.getHumidityFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getHumidityFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getHumidityFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the humidity factor.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable.  :math:`k_{R,RH}` humidity factor for the electrolytical</span>
+<span class="sd">        resistivity in [-]</span>
+
+<span class="sd">    :Raises:</span>
+<span class="sd">      - ValueError: An error occurred if the input value is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">getHumidity</span><span class="p">()</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">50</span><span class="p">,</span><span class="mf">6.70</span><span class="p">,</span><span class="mf">1.20</span><span class="p">,</span><span class="mf">3.23</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">65</span><span class="p">,</span><span class="mf">2.11</span><span class="p">,</span><span class="mf">1.14</span><span class="p">,</span><span class="mf">2.41</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">80</span><span class="p">,</span><span class="mf">1.43</span><span class="p">,</span><span class="mf">0.73</span><span class="p">,</span><span class="mf">1.33</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">95</span><span class="p">,</span><span class="mf">1.07</span><span class="p">,</span><span class="mf">0.14</span><span class="p">,</span><span class="mf">0.00</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.00</span><span class="p">,</span><span class="mf">0.00</span><span class="p">]]</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">H</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">break</span>
+      <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="n">table</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&quot;Error: &#39;humidity&#39; value is not in the list&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">getShelter</span> <span class="o">==</span> <span class="s">&#39;Sheltered&#39;</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">H</span> <span class="o">==</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="n">humidity_factor</span> <span class="o">=</span> <span class="mi">1</span>
+      <span class="k">elif</span> <span class="n">H</span> <span class="o">==</span> <span class="mi">95</span><span class="p">:</span>
+        <span class="n">humidity_factor</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;kRRH&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">humidity_factor</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;kRRH&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">mu</span> <span class="o">=</span> <span class="mf">0.62</span>
+      <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.33</span>
+      <span class="n">theta</span> <span class="o">=</span> <span class="mf">0.79</span>
+      <span class="n">humidity_factor</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;kRRH&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">humidity_factor</span><span class="p">,</span><span class="n">theta</span>
+</div>
+<div class="viewcode-block" id="Propagation.getCorrosionRateData"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getCorrosionRateData">[docs]</a>  <span class="k">def</span> <span class="nf">getCorrosionRateData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns data for the corrosion rate.</span>
+
+<span class="sd">    Gehlen and Nilsson [ref] proposed to express the corrosion rate as:</span>
+
+<span class="sd">    .. math::  V_{corr}=\\frac{m_0}{\\rho}~F_{Cl}~F_{Galv}~F_{O2}</span>
+<span class="sd">       :label: eq910</span>
+
+<span class="sd">    in which the resistivity :math:`\\rho` is determined by considering a</span>
+<span class="sd">    potential resistivity :math:`\\rho_o` to include the effect of the</span>
+<span class="sd">    concrete properties and to correct this potential electrolytical</span>
+<span class="sd">    resistivity with factors for test method, age, curing and environmental</span>
+<span class="sd">    conditions.</span>
+
+<span class="sd">    .. math:: \\rho = \\rho_o~\left(\\frac{t_{Hydr}}{t_o}\\right)^n~k_t~k_c~k_{R,T}~k_{R,RH}~k_{R,Cl}</span>
+<span class="sd">       :label: eq911</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - list. :math:`V_{corr}` distribution data for the corrosion rate in [:math:`mm/yr`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getModelUncertaintyFactor</span><span class="p">()</span>
+    <span class="n">FCl</span><span class="p">,</span><span class="n">tCl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChlorideCorrosionRateFactor</span><span class="p">()</span>
+    <span class="n">FGa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGalvanicFactor</span><span class="p">()</span>
+    <span class="n">Fox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOxygenFactor</span><span class="p">()</span>
+    <span class="n">po</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStandardResistivity</span><span class="p">()</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAgeFactorResistivity</span><span class="p">()</span>
+    <span class="n">kc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCuringFactor</span><span class="p">()</span>
+    <span class="n">kt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTestMethodFactor</span><span class="p">()</span>
+    <span class="n">kRCl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChlorideFactor</span><span class="p">()</span>
+    <span class="n">K</span><span class="p">,</span><span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTemperatureFactor</span><span class="p">()</span>
+    <span class="n">kRRH</span><span class="p">,</span><span class="n">tRRH</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getHumidityFactor</span><span class="p">()</span>
+
+    <span class="n">mov</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;mo&#39;</span><span class="p">,</span><span class="n">mo</span><span class="p">)</span>
+    <span class="n">FClv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;FCl&#39;</span><span class="p">,</span><span class="n">FCl</span><span class="p">)</span>
+    <span class="n">tClv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;tCl&#39;</span><span class="p">,</span><span class="n">tCl</span><span class="p">)</span> <span class="c"># const/log</span>
+    <span class="n">FGav</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;FGa&#39;</span><span class="p">,</span><span class="n">FGa</span><span class="p">)</span> <span class="c"># const</span>
+    <span class="n">Foxv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Fox&#39;</span><span class="p">,</span><span class="n">Fox</span><span class="p">)</span> <span class="c">#cosnt</span>
+    <span class="n">pov</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;po&#39;</span><span class="p">,</span><span class="n">po</span><span class="p">)</span> <span class="c"># norm</span>
+    <span class="n">nv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;n&#39;</span><span class="p">,</span><span class="n">n</span><span class="p">)</span> <span class="c"># norm</span>
+    <span class="n">kcv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;kc&#39;</span><span class="p">,</span><span class="n">kc</span><span class="p">)</span> <span class="c"># const</span>
+    <span class="n">ktv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;kt&#39;</span><span class="p">,</span><span class="n">kt</span><span class="p">)</span> <span class="c"># const</span>
+    <span class="n">kRClv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;kRCl&#39;</span><span class="p">,</span><span class="n">kRCl</span><span class="p">)</span> <span class="c"># const/norm</span>
+    <span class="n">Kv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;K&#39;</span><span class="p">,</span><span class="n">K</span><span class="p">)</span>
+    <span class="n">Tv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;T&#39;</span><span class="p">,</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">kRRHv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;kRRH&#39;</span><span class="p">,</span><span class="n">kRRH</span><span class="p">)</span> <span class="c">#const/log</span>
+    <span class="n">tRRHv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;tRRH&#39;</span><span class="p">,</span><span class="n">tRRH</span><span class="p">)</span> <span class="c">#const/log</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="c"># p = po*(tHydr*to**(-1))**n*kt*kc*kRT*kRRH*kRCl</span>
+    <span class="c"># Vcorr = mo*p**(-1)*FCl*FGa*Fox*0.001</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="n">mov</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">FClv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">tClv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">FGav</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">Foxv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">pov</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">nv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">kcv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">ktv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">kRClv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">Kv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">Tv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">kRRHv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">tRRHv</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_vcorr(&#39;</span><span class="o">+</span><span class="n">string</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getBins</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+</div>
+<div class="viewcode-block" id="Propagation.getCorrosionRate"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getCorrosionRate">[docs]</a>  <span class="k">def</span> <span class="nf">getCorrosionRate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the corrosion rate.</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable. :math:`V_{corr}` the mean corrosion rate in [:math:`mm/yr`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRateData</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chloride_induced_corrosion</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+      <span class="n">shape</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">lognorm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+      <span class="n">p2</span> <span class="o">=</span> <span class="n">shape</span>
+      <span class="n">p3</span> <span class="o">=</span> <span class="n">loc</span>
+      <span class="n">p4</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">Vcorr</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">p3</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">gumbel_r</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">Vcorr</span> <span class="o">=</span> <span class="n">Gumbel</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">loc</span><span class="p">,</span><span class="n">scale</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vcorr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span>
+</div>
+  <span class="k">def</span> <span class="nf">getVcorr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vcorr</span>
+
+  <span class="k">def</span> <span class="nf">getDistributionData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+  <span class="k">def</span> <span class="nf">datCorrosionRate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vcorr</span><span class="o">.</span><span class="n">getMarginalDistribution</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">dat</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span>
+
+  <span class="k">def</span> <span class="nf">getBins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span>
+
+  <span class="k">def</span> <span class="nf">getFunctionValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">name</span>
+
+<div class="viewcode-block" id="Propagation.getPittingFactor"><a class="viewcode-back" href="../../model.html#core.propagation.Propagation.getPittingFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getPittingFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the pitting factor.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       A better model can be found in Steward 2004</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable.  :math:`\\alpha` the pitting factor, taking into account the</span>
+<span class="sd">        pitting effect in case of chloride corrosion, or the partial surface</span>
+<span class="sd">        fraction depassivated when the carbonation is not complete in [-]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="mf">9.28</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">4.04</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;alpha&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">alpha</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

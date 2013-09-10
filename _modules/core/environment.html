@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.environment &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for core.environment</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python -tt</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<div class="viewcode-block" id="Environment"><a class="viewcode-back" href="../../model.html#core.environment.Environment">[docs]</a><span class="k">class</span> <span class="nc">Environment</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Environment</span>
+
+<span class="sd">  The degradation process of concrete is closely related with the</span>
+<span class="sd">  environment. For example, the risk of chloride induced corrosion is higher</span>
+<span class="sd">  than in coastal environments as in the interior of the country.</span>
+
+<span class="sd">  In the model of [DuraCrete2000]_ environmental parameters are used as</span>
+<span class="sd">  initial conditions for the degradation models. In this context, these</span>
+<span class="sd">  parameters are more or less represented as deterministic variables, so that</span>
+<span class="sd">  the user of the model has to decide which assumption is accurate for the</span>
+<span class="sd">  present situation of the structure.</span>
+
+<span class="sd">  :Attributes:</span>
+<span class="sd">    - zone (str): Different zones depending on the position compared to the water level</span>
+<span class="sd">    - shelter (str): Surface protection</span>
+<span class="sd">    - temperature (float): Temperature</span>
+<span class="sd">    - humidity (float): Humidity</span>
+<span class="sd">    - exposure (str): Exposure environment (not in use)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">zone</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">shelter</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Environment.setZone"><a class="viewcode-back" href="../../model.html#core.environment.Environment.setZone">[docs]</a>  <span class="k">def</span> <span class="nf">setZone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Marine Environment</span>
+
+<span class="sd">    Areas that are influenced by the vicinity to an ocean, including coastal</span>
+<span class="sd">    areas, are said to have a marine environment. Within these, different</span>
+<span class="sd">    zones depending on the position compared to the water level.</span>
+
+<span class="sd">    :Zones:</span>
+<span class="sd">      - ``&#39;atmospheric&#39;`` zone. The temperature and humidity conditions in this zone are normally assumed to be equal to the regional climate.</span>
+<span class="sd">      - ``&#39;splash&#39;`` zone and ``&#39;tidal&#39;`` zone. The temperature and humidity conditions in these zones are a mix between the conditions in the atmospheric and submerged zone. The tidal actions are caused by the gravity of the moon and the range of this zone can vary from about 0.5 m to as much as 15 m.</span>
+<span class="sd">      - ``&#39;submerged&#39;`` zone. The temperature and humidity conditions in this zone are equal to the conditions in the water.</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - environment (str): Name of the zone e.g. ``&#39;Tidal&#39;``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">zone</span> <span class="o">=</span> <span class="n">environment</span>
+</div>
+<div class="viewcode-block" id="Environment.getZone"><a class="viewcode-back" href="../../model.html#core.environment.Environment.getZone">[docs]</a>  <span class="k">def</span> <span class="nf">getZone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the environmental zone</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - zone (str): Returns the name of the environmental zone</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">zone</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">zone</span>
+</div>
+<div class="viewcode-block" id="Environment.setShelter"><a class="viewcode-back" href="../../model.html#core.environment.Environment.setShelter">[docs]</a>  <span class="k">def</span> <span class="nf">setShelter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shelter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exposure Class</span>
+
+<span class="sd">    For corrosion due to carbonation DuraCrete (1999) and DuraCrete (2000b)</span>
+<span class="sd">    have proposed three different exposure classes:</span>
+
+<span class="sd">    :Class:</span>
+<span class="sd">      - Laboratory environment (LAB) has a constant temperature and relative humidity in the air. The surface is protected against precipitation.</span>
+<span class="sd">      - Outdoor sheltered environment (OS), where the air temperature and the relative humidity in the air changes over the year. The surface is protected against precipitation.</span>
+<span class="sd">      - Outdoor unsheltered environment (OUS), where the air temperature and the relative humidity in the air changes over the year. The surface is not protected against precipitation.</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - shelter (str): Name of the class e.g. ``&#39;Unsheltered&#39;``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">shelter</span> <span class="o">=</span> <span class="n">shelter</span>
+</div>
+<div class="viewcode-block" id="Environment.getShelter"><a class="viewcode-back" href="../../model.html#core.environment.Environment.getShelter">[docs]</a>  <span class="k">def</span> <span class="nf">getShelter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the exposure class</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - shelter (str): Returns the name of the exposure class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">shelter</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shelter</span>
+</div>
+<div class="viewcode-block" id="Environment.setTemperature"><a class="viewcode-back" href="../../model.html#core.environment.Environment.setTemperature">[docs]</a>  <span class="k">def</span> <span class="nf">setTemperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set a temperature value</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - temperature (float): Temperature value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature</span>
+</div>
+<div class="viewcode-block" id="Environment.getTemperature"><a class="viewcode-back" href="../../model.html#core.environment.Environment.getTemperature">[docs]</a>  <span class="k">def</span> <span class="nf">getTemperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the temperature</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - temperature (float): Returns the temperature</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>
+</div>
+<div class="viewcode-block" id="Environment.setHumidity"><a class="viewcode-back" href="../../model.html#core.environment.Environment.setHumidity">[docs]</a>  <span class="k">def</span> <span class="nf">setHumidity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">humidity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set a humidity value</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - humidity (int): Humidity value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">=</span> <span class="n">humidity</span>
+</div>
+<div class="viewcode-block" id="Environment.getHumidity"><a class="viewcode-back" href="../../model.html#core.environment.Environment.getHumidity">[docs]</a>  <span class="k">def</span> <span class="nf">getHumidity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the humidity</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - humidity (int): Returns the humidity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span>
+</div>
+  <span class="k">def</span> <span class="nf">setExposure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">exposure</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span> <span class="o">=</span> <span class="n">exposure</span>
+
+  <span class="k">def</span> <span class="nf">getExposure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

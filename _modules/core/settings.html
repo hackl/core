@@ -1,0 +1,185 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.settings &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for core.settings</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python -tt</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">concrete</span> <span class="kn">import</span> <span class="n">Concrete</span>
+<span class="kn">from</span> <span class="nn">reinforcement</span> <span class="kn">import</span> <span class="n">Reinforcement</span>
+<span class="kn">from</span> <span class="nn">geometrie</span> <span class="kn">import</span> <span class="n">Geometrie</span>
+<span class="kn">from</span> <span class="nn">environment</span> <span class="kn">import</span> <span class="n">Environment</span>
+<span class="kn">from</span> <span class="nn">chloride</span> <span class="kn">import</span> <span class="n">Chloride</span>
+<span class="kn">from</span> <span class="nn">carbonation</span> <span class="kn">import</span> <span class="n">Carbonation</span>
+<span class="kn">from</span> <span class="nn">propagation</span> <span class="kn">import</span> <span class="n">Propagation</span>
+<span class="kn">from</span> <span class="nn">corrosion</span> <span class="kn">import</span> <span class="n">Pitting</span>
+<span class="kn">from</span> <span class="nn">resistance</span> <span class="kn">import</span> <span class="n">Resistance</span>
+
+<div class="viewcode-block" id="setValues"><a class="viewcode-back" href="../../model.html#core.settings.setValues">[docs]</a><span class="k">def</span> <span class="nf">setValues</span><span class="p">():</span>
+  <span class="sd">&quot;&quot;&quot;Default settings</span>
+
+<span class="sd">  :Returns:</span>
+<span class="sd">    - Default settings for the probabilistic models for degradation of concrete.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="c"># Concrete settings</span>
+  <span class="n">concrete</span> <span class="o">=</span> <span class="n">Concrete</span><span class="p">(</span><span class="s">&#39;C25/30&#39;</span><span class="p">)</span>
+
+  <span class="n">concrete</span><span class="o">.</span><span class="n">setWCratio</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
+  <span class="c"># values: (0.3),0.4,(0.45),0.5</span>
+
+  <span class="n">concrete</span><span class="o">.</span><span class="n">setCuringPeriod</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+  <span class="c"># values: 1,3,7,28</span>
+
+  <span class="n">concrete</span><span class="o">.</span><span class="n">setGrade</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+  <span class="c"># values: 45,40,25,35</span>
+
+  <span class="c"># Reinforcement settings</span>
+  <span class="n">reinforcement</span> <span class="o">=</span> <span class="n">Reinforcement</span><span class="p">(</span><span class="s">&#39;S500&#39;</span><span class="p">)</span>
+  <span class="n">reinforcement</span><span class="o">.</span><span class="n">setYieldStress</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+  <span class="c"># values: all</span>
+
+  <span class="n">reinforcement</span><span class="o">.</span><span class="n">setDiameter</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+  <span class="c"># values: (8),10,16,27</span>
+
+  <span class="n">reinforcement</span><span class="o">.</span><span class="n">setBars</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+  <span class="c"># values: all</span>
+
+  <span class="c"># Geometry settings</span>
+  <span class="n">geometrie</span> <span class="o">=</span> <span class="n">Geometrie</span><span class="p">(</span><span class="s">&#39;Beam&#39;</span><span class="p">)</span>
+  <span class="n">geometrie</span><span class="o">.</span><span class="n">setCover</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="c"># values: all</span>
+  <span class="n">geometrie</span><span class="o">.</span><span class="n">setBeamWidth</span><span class="p">(</span><span class="mi">350</span><span class="p">)</span>
+  <span class="n">geometrie</span><span class="o">.</span><span class="n">setBeamHeight</span><span class="p">(</span><span class="mi">550</span><span class="p">)</span>
+  <span class="n">geometrie</span><span class="o">.</span><span class="n">setBeamLength</span><span class="p">(</span><span class="mi">5000</span><span class="p">)</span>
+
+  <span class="c"># Environment settings</span>
+  <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+
+  <span class="n">environment</span><span class="o">.</span><span class="n">setZone</span><span class="p">(</span><span class="s">&#39;Submerged&#39;</span><span class="p">)</span>
+  <span class="c"># values: &#39;Submerged&#39;,&#39;Tidal&#39;,&#39;Splash&#39;,&#39;Atmospheric&#39;</span>
+
+  <span class="n">environment</span><span class="o">.</span><span class="n">setHumidity</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+  <span class="c"># values: 50,65,80,95,100</span>
+
+  <span class="c"># for the simplified corrosion rate:</span>
+  <span class="c"># environment.setExposure(&#39;Wet-Dry&#39;)</span>
+  <span class="c"># values: &#39;Wet&#39;,&#39;Wet-Dry&#39;,&#39;Airborne sea water&#39;,&#39;Tidal&#39;</span>
+
+  <span class="n">environment</span><span class="o">.</span><span class="n">setTemperature</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+  <span class="c"># values: all</span>
+
+  <span class="n">environment</span><span class="o">.</span><span class="n">setShelter</span><span class="p">(</span><span class="s">&#39;Unsheltered&#39;</span><span class="p">)</span>
+  <span class="c"># &#39;Sheltered&#39;,&#39;Unsheltered&#39;</span>
+
+  <span class="c"># Chloride</span>
+  <span class="n">chloride</span> <span class="o">=</span> <span class="n">Chloride</span><span class="p">(</span><span class="n">concrete</span><span class="p">,</span><span class="n">geometrie</span><span class="p">,</span><span class="n">environment</span><span class="p">)</span>
+
+  <span class="c"># Carbonation</span>
+  <span class="n">carbonation</span> <span class="o">=</span> <span class="n">Carbonation</span><span class="p">(</span><span class="n">concrete</span><span class="p">,</span><span class="n">geometrie</span><span class="p">,</span><span class="n">environment</span><span class="p">)</span>
+
+  <span class="c"># Propagation</span>
+  <span class="n">rate</span> <span class="o">=</span> <span class="n">Propagation</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span>
+
+  <span class="c"># Corrosion</span>
+  <span class="n">pitting</span> <span class="o">=</span> <span class="n">Pitting</span><span class="p">(</span><span class="n">reinforcement</span><span class="p">,</span><span class="n">rate</span><span class="p">)</span>
+  <span class="c"># pitting.setDeltaTime(50)</span>
+  <span class="c"># values: all</span>
+
+  <span class="c"># Resistance</span>
+  <span class="n">resistance</span> <span class="o">=</span> <span class="n">Resistance</span><span class="p">(</span><span class="n">concrete</span><span class="p">,</span><span class="n">reinforcement</span><span class="p">,</span><span class="n">geometrie</span><span class="p">,</span><span class="n">rate</span><span class="p">,</span><span class="n">pitting</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">concrete</span><span class="p">,</span> <span class="n">reinforcement</span><span class="p">,</span> <span class="n">geometrie</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">chloride</span><span class="p">,</span> <span class="n">carbonation</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">pitting</span><span class="p">,</span> <span class="n">resistance</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

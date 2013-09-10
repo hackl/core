@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.geometrie &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for core.geometrie</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python -tt</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+<div class="viewcode-block" id="Geometrie"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie">[docs]</a><span class="k">class</span> <span class="nc">Geometrie</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Geometry</span>
+
+<span class="sd">  :Attributes:</span>
+<span class="sd">    - name (str): Name of the Structure e.g. &#39;Beam&#39;</span>
+<span class="sd">    - concrete_cover (float): Concrete cover depth</span>
+<span class="sd">    - beam_width (float): width of a beam</span>
+<span class="sd">    - beam_height (float): height of a beam</span>
+<span class="sd">    - beam_length (float): length of a beam</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">concrete_cover</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beam_width</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beam_height</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beam_length</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Geometrie.setCover"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.setCover">[docs]</a>  <span class="k">def</span> <span class="nf">setCover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cover</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the initial concrete cover depth</span>
+
+<span class="sd">    In addition the thickness of the concrete cover denoted by :math:`d_c` ,</span>
+<span class="sd">    is an important parameter for the RC structure. Beside the effect to bond</span>
+<span class="sd">    the reinforcement to the concrete, the cover protects steel bars against</span>
+<span class="sd">    corrosion.</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - cover (float): Initial concrete cover in [mm]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">concrete_cover</span> <span class="o">=</span> <span class="n">cover</span>
+</div>
+<div class="viewcode-block" id="Geometrie.getCover"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.getCover">[docs]</a>  <span class="k">def</span> <span class="nf">getCover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the initial concrete cover depth</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - concrete_cover (float): Returns the initial concrete cover</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">concrete_cover</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">concrete_cover</span>
+</div>
+<div class="viewcode-block" id="Geometrie.getConcreteCoverDepth"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.getConcreteCoverDepth">[docs]</a>  <span class="k">def</span> <span class="nf">getConcreteCoverDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the concrete cover depth</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - concrete_cover_depth (float): Returns a random value for the concrete cover</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">concrete_cover</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concrete_cover</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">*</span><span class="n">mu</span>
+    <span class="n">lamda</span><span class="p">,</span> <span class="n">zita</span> <span class="o">=</span> <span class="n">LogNormLamdaZita</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+
+    <span class="n">concrete_cover_depth</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">lognormvariate</span><span class="p">(</span><span class="n">lamda</span><span class="p">,</span> <span class="n">zita</span><span class="p">)</span> <span class="c"># [mm]</span>
+    <span class="k">return</span> <span class="n">concrete_cover_depth</span>
+</div>
+<div class="viewcode-block" id="Geometrie.setBeamWidth"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.setBeamWidth">[docs]</a>  <span class="k">def</span> <span class="nf">setBeamWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set a width for the beam</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - width (float): beam width in [mm]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beam_width</span> <span class="o">=</span> <span class="n">width</span>
+</div>
+<div class="viewcode-block" id="Geometrie.getBeamWidth"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.getBeamWidth">[docs]</a>  <span class="k">def</span> <span class="nf">getBeamWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the width of the beam</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - beam_width (float): Returns the beam width</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_width</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_width</span>
+</div>
+<div class="viewcode-block" id="Geometrie.setBeamHeight"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.setBeamHeight">[docs]</a>  <span class="k">def</span> <span class="nf">setBeamHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">height</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set a height for the beam</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - height (float): beam height in [mm]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beam_height</span> <span class="o">=</span> <span class="n">height</span>
+</div>
+<div class="viewcode-block" id="Geometrie.getBeamHeight"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.getBeamHeight">[docs]</a>  <span class="k">def</span> <span class="nf">getBeamHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the height of the beam</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - beam_height (float): Returns the beam height</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_height</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_height</span>
+</div>
+<div class="viewcode-block" id="Geometrie.getBeamDepth"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.getBeamDepth">[docs]</a>  <span class="k">def</span> <span class="nf">getBeamDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns depth of the beam</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - beam_depth (float): Returns beam depth :math:`d = h-d_c`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">beam_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBeamHeight</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">getConcreteCoverDepth</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">beam_depth</span>
+
+</div>
+<div class="viewcode-block" id="Geometrie.setBeamLength"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.setBeamLength">[docs]</a>  <span class="k">def</span> <span class="nf">setBeamLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">length</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the length of the beam</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - length (float): beam length in [mm]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beam_length</span> <span class="o">=</span> <span class="n">length</span>
+</div>
+<div class="viewcode-block" id="Geometrie.getBeamLength"><a class="viewcode-back" href="../../model.html#core.geometrie.Geometrie.getBeamLength">[docs]</a>  <span class="k">def</span> <span class="nf">getBeamLength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the length of the beam</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - beam_length (float): Returns the beam length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_length</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_length</span>
+</div>
+  <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

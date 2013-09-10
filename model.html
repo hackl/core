@@ -1,0 +1,2413 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Probabilistic Models for Degradation of Concrete &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="index.html" />
+    <link rel="next" title="5. List of References" href="references.html" />
+    <link rel="prev" title="3. Theoretical Background" href="theory.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="5. List of References"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="theory.html" title="3. Theoretical Background"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CoRe 1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="probabilistic-models-for-degradation-of-concrete">
+<span id="chap-model"></span><h1>4. Probabilistic Models for Degradation of Concrete<a class="headerlink" href="#probabilistic-models-for-degradation-of-concrete" title="Permalink to this headline">¶</a></h1>
+<p>Designing new structures or accepting existing ones as adequately safe, is
+from a probabilistic point of view, the result of a decision making process
+based on some optimality criteria. This process links requirements and
+expectations of a structure, load and actions, geometry and material
+properties and also expectations of society. <a class="reference internal" href="references.html#jcss2002">[JCSS2002]</a></p>
+<p>Such decision problems are mathematical treated with the so-called decision
+theory. An important aspect of the decision theory is the assessment of
+consequences and probabilities, which are depict in probabilistic
+models. <a class="reference internal" href="references.html#faber2009">[Faber2009]</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Probabilistic Model (Benjamin and Cornell, 1970)</p>
+<p class="last">A probabilistic model remains an abstraction until it has been related to
+observations of physical phenomenon.</p>
+</div>
+<p>This requires the collection and progression of input data as well as
+determination of statistical distribution, corresponding statistical
+parameters and possible correlations.</p>
+<p>For the degradation of concrete structures, several models have been developed
+to provide methods to estimate the length of time during which RC structures
+maintain a desired level of functionality. Service life models such as
+<a class="reference internal" href="references.html#duracrete1999">[DuraCrete1999]</a>, <a class="reference internal" href="references.html#duracrete2000">[DuraCrete2000]</a>, <a class="reference internal" href="references.html#lifecon2003">[LIFECON2003]</a>, and <a class="reference internal" href="references.html#fib2006">[fib2006]</a> provide
+valuable information about the durability characteristics of concrete structures.
+The proposed method of this work is not limited to any of those models. However,
+in the remainder of this work only the <a class="reference internal" href="references.html#duracrete2000">[DuraCrete2000]</a> model is going to be
+treated. This chapter provides an overview of this probabilistic model. Hence,
+there are no explicit references cited for the assumptions of the
+<a class="reference internal" href="references.html#duracrete2000">[DuraCrete2000]</a> model.</p>
+<div class="section" id="material-properties">
+<h2>4.1. Material Properties<a class="headerlink" href="#material-properties" title="Permalink to this headline">¶</a></h2>
+<p>The description of each material property consists of a mathematical model and
+random variables. Functional relationships between the variables may be part
+of the material model. <a class="reference internal" href="references.html#jcss2002">[JCSS2002]</a></p>
+<span class="target" id="module-core.settings"></span><dl class="function">
+<dt id="core.settings.setValues">
+<tt class="descclassname">core.settings.</tt><tt class="descname">setValues</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/settings.html#setValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.settings.setValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default settings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>Default settings for the probabilistic models for degradation of concrete.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="concrete">
+<h3>4.1.1. Concrete<a class="headerlink" href="#concrete" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="core.concrete.Concrete">
+<em class="property">class </em><tt class="descclassname">core.concrete.</tt><tt class="descname">Concrete</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concrete</p>
+<p>Concrete is a composite material made of aggregates and reaction products of
+cement and mixing water.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>name (str): Name of the concrete e.g. &#8216;C25/30&#8217;</li>
+<li>water_cement_ratio (float): water-cement ratio of the concrete</li>
+<li>curing period (int): curring period of the concrete</li>
+<li>grade (int): grade of the concrete</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.concrete.Concrete.getCompressiveStrength">
+<tt class="descname">getCompressiveStrength</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete.getCompressiveStrength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete.getCompressiveStrength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the compressive strength</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>compressive_strength (float): Returns fc of the concrete</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.concrete.Concrete.getCuringPeriod">
+<tt class="descname">getCuringPeriod</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete.getCuringPeriod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete.getCuringPeriod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the curing period for the concrete</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>curing_period (int): Returns the curing period in days</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.concrete.Concrete.getGrade">
+<tt class="descname">getGrade</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete.getGrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete.getGrade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the concrete grade</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>grade (float): Returns the grade of the concrete</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.concrete.Concrete.getWCratio">
+<tt class="descname">getWCratio</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete.getWCratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete.getWCratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the wc-ratio</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>water_cement_ratio (float): Returns the water-cement ratio</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.concrete.Concrete.setCuringPeriod">
+<tt class="descname">setCuringPeriod</tt><big>(</big><em>period</em><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete.setCuringPeriod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete.setCuringPeriod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the curing period for the concrete</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>curing_period (int): Curing period in days</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.concrete.Concrete.setGrade">
+<tt class="descname">setGrade</tt><big>(</big><em>grade</em><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete.setGrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete.setGrade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the concrete grade</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>grade (float): Grade of the concrete</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.concrete.Concrete.setWCratio">
+<tt class="descname">setWCratio</tt><big>(</big><em>wcRatio</em><big>)</big><a class="reference internal" href="_modules/core/concrete.html#Concrete.setWCratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.concrete.Concrete.setWCratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a wc-ratio</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>wcRatio (float): water-cement ratio of the concrete</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="reinforcement">
+<h3>4.1.2. Reinforcement<a class="headerlink" href="#reinforcement" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="core.reinforcement.Reinforcement">
+<em class="property">class </em><tt class="descclassname">core.reinforcement.</tt><tt class="descname">Reinforcement</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reinforcement</p>
+<p>Because of the low tensile strength of concrete, it is reinforced with steel
+bars or wires that resist the tensile stresses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>name (str): Name of the steal e.g. &#8216;S500&#8217;</li>
+<li>yield_strength (float): yield strength of the steal</li>
+<li>diameter (float): Diameter of the steal bar</li>
+<li>bars (int): Amount on reinforcement</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.getBarDiameter">
+<tt class="descname">getBarDiameter</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.getBarDiameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.getBarDiameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the bar diameter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>bar_diameter (random): Returns the bar diameter as a random variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.getBars">
+<tt class="descname">getBars</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.getBars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.getBars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the amount of reinforcement bars</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>bars (int): Returns the amount of reinforcement bars</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.getDiameter">
+<tt class="descname">getDiameter</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.getDiameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.getDiameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the initial diameter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>diameter (float): Returns the initial diameter</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.getNominalBarArea">
+<tt class="descname">getNominalBarArea</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.getNominalBarArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.getNominalBarArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the cross-section area of the reinforcement bar</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>bar_area (random): Returns a random variable for the cross-section area</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.getYieldStrength">
+<tt class="descname">getYieldStrength</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.getYieldStrength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.getYieldStrength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the yield strength</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>yield strength (random): Returns the yield strength as a random variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.getYieldStress">
+<tt class="descname">getYieldStress</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.getYieldStress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.getYieldStress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the yield strength</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>yield_stress (float): Returns the yield strength of the reinforcement bar</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.setBars">
+<tt class="descname">setBars</tt><big>(</big><em>bars</em><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.setBars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.setBars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set amount of reinforcement bars</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>bars (int): Amount of reinforcement bars</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.setDiameter">
+<tt class="descname">setDiameter</tt><big>(</big><em>diameter</em><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.setDiameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.setDiameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an initial diameter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>diameter (float): initial diameter of the reinforcement bar</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.reinforcement.Reinforcement.setYieldStress">
+<tt class="descname">setYieldStress</tt><big>(</big><em>yield_stress</em><big>)</big><a class="reference internal" href="_modules/core/reinforcement.html#Reinforcement.setYieldStress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.reinforcement.Reinforcement.setYieldStress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a yield strength for the steal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>yield_stress (float): yield stress for the reinforcement</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="environmental-actions">
+<h2>4.2. Environmental Actions<a class="headerlink" href="#environmental-actions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="core.environment.Environment">
+<em class="property">class </em><tt class="descclassname">core.environment.</tt><tt class="descname">Environment</tt><a class="reference internal" href="_modules/core/environment.html#Environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Environment</p>
+<p>The degradation process of concrete is closely related with the
+environment. For example, the risk of chloride induced corrosion is higher
+than in coastal environments as in the interior of the country.</p>
+<p>In the model of <a class="reference internal" href="references.html#duracrete2000">[DuraCrete2000]</a> environmental parameters are used as
+initial conditions for the degradation models. In this context, these
+parameters are more or less represented as deterministic variables, so that
+the user of the model has to decide which assumption is accurate for the
+present situation of the structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>zone (str): Different zones depending on the position compared to the water level</li>
+<li>shelter (str): Surface protection</li>
+<li>temperature (float): Temperature</li>
+<li>humidity (float): Humidity</li>
+<li>exposure (str): Exposure environment (not in use)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.environment.Environment.getHumidity">
+<tt class="descname">getHumidity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.getHumidity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.getHumidity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the humidity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>humidity (int): Returns the humidity</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.environment.Environment.getShelter">
+<tt class="descname">getShelter</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.getShelter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.getShelter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the exposure class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>shelter (str): Returns the name of the exposure class</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.environment.Environment.getTemperature">
+<tt class="descname">getTemperature</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.getTemperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.getTemperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the temperature</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>temperature (float): Returns the temperature</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.environment.Environment.getZone">
+<tt class="descname">getZone</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.getZone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.getZone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the environmental zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>zone (str): Returns the name of the environmental zone</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.environment.Environment.setHumidity">
+<tt class="descname">setHumidity</tt><big>(</big><em>humidity</em><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.setHumidity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.setHumidity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a humidity value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>humidity (int): Humidity value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.environment.Environment.setShelter">
+<tt class="descname">setShelter</tt><big>(</big><em>shelter</em><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.setShelter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.setShelter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exposure Class</p>
+<p>For corrosion due to carbonation DuraCrete (1999) and DuraCrete (2000b)
+have proposed three different exposure classes:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Class :</th><td class="field-body"><ul class="first simple">
+<li>Laboratory environment (LAB) has a constant temperature and relative humidity in the air. The surface is protected against precipitation.</li>
+<li>Outdoor sheltered environment (OS), where the air temperature and the relative humidity in the air changes over the year. The surface is protected against precipitation.</li>
+<li>Outdoor unsheltered environment (OUS), where the air temperature and the relative humidity in the air changes over the year. The surface is not protected against precipitation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>shelter (str): Name of the class e.g. <tt class="docutils literal"><span class="pre">'Unsheltered'</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.environment.Environment.setTemperature">
+<tt class="descname">setTemperature</tt><big>(</big><em>temperature</em><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.setTemperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.setTemperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a temperature value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>temperature (float): Temperature value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.environment.Environment.setZone">
+<tt class="descname">setZone</tt><big>(</big><em>environment</em><big>)</big><a class="reference internal" href="_modules/core/environment.html#Environment.setZone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.environment.Environment.setZone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Marine Environment</p>
+<p>Areas that are influenced by the vicinity to an ocean, including coastal
+areas, are said to have a marine environment. Within these, different
+zones depending on the position compared to the water level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Zones :</th><td class="field-body"><ul class="first simple">
+<li><tt class="docutils literal"><span class="pre">'atmospheric'</span></tt> zone. The temperature and humidity conditions in this zone are normally assumed to be equal to the regional climate.</li>
+<li><tt class="docutils literal"><span class="pre">'splash'</span></tt> zone and <tt class="docutils literal"><span class="pre">'tidal'</span></tt> zone. The temperature and humidity conditions in these zones are a mix between the conditions in the atmospheric and submerged zone. The tidal actions are caused by the gravity of the moon and the range of this zone can vary from about 0.5 m to as much as 15 m.</li>
+<li><tt class="docutils literal"><span class="pre">'submerged'</span></tt> zone. The temperature and humidity conditions in this zone are equal to the conditions in the water.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>environment (str): Name of the zone e.g. <tt class="docutils literal"><span class="pre">'Tidal'</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="geometric-properties">
+<h2>4.3. Geometric Properties<a class="headerlink" href="#geometric-properties" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="core.geometrie.Geometrie">
+<em class="property">class </em><tt class="descclassname">core.geometrie.</tt><tt class="descname">Geometrie</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geometry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>name (str): Name of the Structure e.g. &#8216;Beam&#8217;</li>
+<li>concrete_cover (float): Concrete cover depth</li>
+<li>beam_width (float): width of a beam</li>
+<li>beam_height (float): height of a beam</li>
+<li>beam_length (float): length of a beam</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.geometrie.Geometrie.getBeamDepth">
+<tt class="descname">getBeamDepth</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.getBeamDepth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.getBeamDepth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns depth of the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>beam_depth (float): Returns beam depth <span class="math">\(d = h-d_c\)</span></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.getBeamHeight">
+<tt class="descname">getBeamHeight</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.getBeamHeight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.getBeamHeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the height of the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>beam_height (float): Returns the beam height</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.getBeamLength">
+<tt class="descname">getBeamLength</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.getBeamLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.getBeamLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the length of the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>beam_length (float): Returns the beam length</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.getBeamWidth">
+<tt class="descname">getBeamWidth</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.getBeamWidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.getBeamWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the width of the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>beam_width (float): Returns the beam width</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.getConcreteCoverDepth">
+<tt class="descname">getConcreteCoverDepth</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.getConcreteCoverDepth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.getConcreteCoverDepth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the concrete cover depth</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>concrete_cover_depth (float): Returns a random value for the concrete cover</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.getCover">
+<tt class="descname">getCover</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.getCover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.getCover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the initial concrete cover depth</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>concrete_cover (float): Returns the initial concrete cover</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.setBeamHeight">
+<tt class="descname">setBeamHeight</tt><big>(</big><em>height</em><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.setBeamHeight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.setBeamHeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a height for the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>height (float): beam height in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.setBeamLength">
+<tt class="descname">setBeamLength</tt><big>(</big><em>length</em><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.setBeamLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.setBeamLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the length of the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>length (float): beam length in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.setBeamWidth">
+<tt class="descname">setBeamWidth</tt><big>(</big><em>width</em><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.setBeamWidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.setBeamWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a width for the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>width (float): beam width in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.geometrie.Geometrie.setCover">
+<tt class="descname">setCover</tt><big>(</big><em>cover</em><big>)</big><a class="reference internal" href="_modules/core/geometrie.html#Geometrie.setCover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.geometrie.Geometrie.setCover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the initial concrete cover depth</p>
+<p>In addition the thickness of the concrete cover denoted by <span class="math">\(d_c\)</span> ,
+is an important parameter for the RC structure. Beside the effect to bond
+the reinforcement to the concrete, the cover protects steel bars against
+corrosion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>cover (float): Initial concrete cover in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="carbonation-induced-corrosion">
+<h2>4.4. Carbonation Induced Corrosion<a class="headerlink" href="#carbonation-induced-corrosion" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="core.carbonation.Carbonation">
+<em class="property">class </em><tt class="descclassname">core.carbonation.</tt><tt class="descname">Carbonation</tt><big>(</big><em>concrete</em>, <em>geometrie</em>, <em>environment</em><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Carbonation induced onset of corrosion</p>
+<p>The deterioration model is based on the well known 1st Fick&#8217;s diffusion
+law. As can be seen in equation <a href="#equation-eq73">(1)</a>, the deterioration model
+considers influencing aspects such as environmental action and
+execution. This is achieved by the introduction of a diffusion reference
+number (carbonation relevant and a measurable concrete property) in addition
+to empirically determined environmental and execution factors. Additionally,
+depending on the used compliance test arrangement a so-called test method
+factor <span class="math">\(k_t\)</span> is introduced.</p>
+<div class="math" id="equation-eq73">
+<span class="eqno">(1)</span>\[x_c = \sqrt{\frac{2~k_e~k_c~k_t~D_{eff}~C_s}{a}}~\sqrt{t}~\left(\frac{t_o}{t}\right)^n\]</div>
+<p>Depending on the used compliance test arrangement the effective diffusion
+coefficient and the binding capacity will be measured directly (Accelerated
+Carbonation). In this case these parameters can be grouped together under
+one term according to formula <a href="#equation-eq74">(2)</a>:</p>
+<div class="math" id="equation-eq74">
+<span class="eqno">(2)</span>\[R_{Carb}= \frac{a}{D_{eff}}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>concrete</li>
+<li>geometry</li>
+<li>environment</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getAgeFactor">
+<tt class="descname">getAgeFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getAgeFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getAgeFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the age factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable.  <span class="math">\(n\)</span> constant parameter which considers the influence of
+meso climatic conditions (e.g. orientation and placing of structure) in
+[-] - environmental variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getCarbonationDepth">
+<tt class="descname">getCarbonationDepth</tt><big>(</big><em>age</em><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getCarbonationDepth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getCarbonationDepth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the carbonation depth.</p>
+<p>see Eq. <a href="#equation-eq73">(1)</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>age (int):  time in service in [<span class="math">\(yr\)</span>]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float. <span class="math">\(x_c(t)\)</span> depth of carbonation front at time <span class="math">\(t\)</span> in
+[<span class="math">\(mm\)</span>], i.e. <span class="math">\(x_c(t)\)</span>; in case of the service life
+prediction, <span class="math">\(x_c\)</span> is equal to the concrete cover depth
+<span class="math">\(d_c\)</span></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">No longer supported!</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getConcreteCoverDepth">
+<tt class="descname">getConcreteCoverDepth</tt><big>(</big><em>depth</em><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getConcreteCoverDepth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getConcreteCoverDepth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the cover depth</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>depth (float): initial value for the concrete cover in [mm]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(d_c\)</span> concrete cover depth in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getEnvironmentalVariable">
+<tt class="descname">getEnvironmentalVariable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getEnvironmentalVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getEnvironmentalVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the environmental variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable.  <span class="math">\(k_e\)</span> constant parameter which considers the influence of
+environment on <span class="math">\(D_{eff}\)</span> (e.g. realistic moisture history at the
+concrete surface during use) in [-] - environmental variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getExecutionVariable">
+<tt class="descname">getExecutionVariable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getExecutionVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getExecutionVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the execution variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable. <span class="math">\(k_c\)</span> constant parameter which considers the influence of
+execution on <span class="math">\(D_{eff}\)</span> (e.g. influence of curing) in [-] - execution
+variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getFailureProbability">
+<tt class="descname">getFailureProbability</tt><big>(</big><em>age</em>, <em>analysis='FORM'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getFailureProbability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getFailureProbability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the probability of failure.</p>
+<p>For the onset of corrosion, the following limit state can be considered:</p>
+<div class="math" id="equation-eq71">
+<span class="eqno">(3)</span>\[\begin{split}P_f = Pr[x_c(t)&gt;d_c]\end{split}\]</div>
+<p>which states that the probability that the carbonation front <span class="math">\(x\)</span>
+reaches or is larger than the reinforcement at the cover depth <span class="math">\(d_c\)</span>
+should be smaller than some predefined value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>age (int):  exposure period in [<span class="math">\(yr\)</span>]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;FORM&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float.  <span class="math">\(P_f\)</span> probability of carbonation induced onset of corrosion</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getMaterialFactor">
+<tt class="descname">getMaterialFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getMaterialFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getMaterialFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the material factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable. <span class="math">\(R_{Carb}\)</span> effective carbonation resistance of concrete,
+taking binding into account, at defined compaction, curing and
+environmental conditions in [<span class="math">\(kgCO_2/m^3/mm^2/yr\)</span>] - material
+variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getSurfaceConcentration">
+<tt class="descname">getSurfaceConcentration</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getSurfaceConcentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getSurfaceConcentration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the surface carbonation concentration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable.  <span class="math">\(C_s\)</span> concentration of the passivator at the concrete
+surface, in this case in [<span class="math">\(kgCO_2/m^3\)</span>] - environmental variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Following DuraCrete2000, this value is a constant!</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.carbonation.Carbonation.getTestVariable">
+<tt class="descname">getTestVariable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/carbonation.html#Carbonation.getTestVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.carbonation.Carbonation.getTestVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the test variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(k_t\)</span> constant parameter which considers the influence of
+test method on <span class="math">\(D_{eff}\)</span> in [-] - test method variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="chloride-induced-corrosion">
+<h2>4.5. Chloride Induced Corrosion<a class="headerlink" href="#chloride-induced-corrosion" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="core.chloride.Chloride">
+<em class="property">class </em><tt class="descclassname">core.chloride.</tt><tt class="descname">Chloride</tt><big>(</big><em>concrete</em>, <em>geometrie</em>, <em>environment</em><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chloride induced onset of corrosion</p>
+<p>In order to cause corrosion of rebars, chlorides must penetrate the concrete
+and the chloride content at the rebar must exceed the threshold-level
+ccrit. This depends primarily upon the immediate environmental conditions
+and on the concrete-technological parameters, which influence a) the
+chloride transport and b)the chloride binding that occurs thereby. It is
+recognised that the ingress of chlorides into concrete is a complex
+interaction of physical and chemical processes, but it is also acknowledged
+that diffusion is one of the principal mechanisms beyond the near surface
+zone. Many investigators, therefore, use the diffusion theory and the error
+function equation to model chloride ingress.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>concrete</li>
+<li>geometry</li>
+<li>environment</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="core.chloride.Chloride.critical_chloride_definition">
+<tt class="descname">critical_chloride_definition</tt><em class="property"> = None</em><a class="headerlink" href="#core.chloride.Chloride.critical_chloride_definition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Definitions of threshold level</p>
+<ol class="arabic simple">
+<li>Definition: Critical chloride content, at which a depassivation of the steel surface and iron dissolution begins, irrespective of whether it leads to visible corrosion damage on the concrete surface.</li>
+<li>Definition: Critical chloride content, which leads to a deterioration or damage of the concrete structure.</li>
+</ol>
+<p>If the critical content refers to Definition 2, then it is obvious that,
+depending on environmental conditions, considerably higher chloride
+concentrations must be expected than when using Definition 1. Since
+corrosion damage only occurs if in addition to steel surface
+depassivation, further conditions are met which would effect a higher
+corrosion rate (e.g., sufficient oxygen and high air humidity).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body"><ul class="first last simple">
+<li>critical_chloride_definition = 2</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getAgeFactor">
+<tt class="descname">getAgeFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getAgeFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getAgeFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the age factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable. <span class="math">\(n\)</span> age factor, in [-] - environmental and material variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getChlorideConcentration">
+<tt class="descname">getChlorideConcentration</tt><big>(</big><em>depth</em>, <em>age</em><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getChlorideConcentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getChlorideConcentration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the chloride concentration.</p>
+<div class="math">
+\[C(z,t)=C_s \left(1-erf \frac{z}{2 \sqrt{k_e~k_t~k_c~D_o~\left(\frac{t_o}{t}\right)^n~t}} \right)\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>depth (int):  distance to the concrete surface in [<span class="math">\(mm\)</span>]</li>
+<li>age (int):  exposure period in [<span class="math">\(yr\)</span>]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float.  <span class="math">\(C(x,t)\)</span> chloride level at depth <span class="math">\(x\)</span> after time
+<span class="math">\(t\)</span> in [<span class="math">\(wt.-\%Cl^-/binder\)</span>]; being equal to the critical
+chloride content if service life is considered</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">No longer supported!</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getConcreteCoverDepth">
+<tt class="descname">getConcreteCoverDepth</tt><big>(</big><em>depth</em><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getConcreteCoverDepth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getConcreteCoverDepth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the cover depth</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>depth (float): initial value for the concrete cover in [mm]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(d_c\)</span> concrete cover depth in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getCriticalChlorideConcentration">
+<tt class="descname">getCriticalChlorideConcentration</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getCriticalChlorideConcentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getCriticalChlorideConcentration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the critical chloride concentration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable. <span class="math">\(C_{crit}\)</span> critical chloride content, in [<span class="math">\(wt.-\%
+Cl^-/binder\)</span>]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getDiffusionCoefficient">
+<tt class="descname">getDiffusionCoefficient</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getDiffusionCoefficient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getDiffusionCoefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the diffusion coefficient.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable.  <span class="math">\(D_o\)</span> chloride migration coefficient at
+defined compaction, curing and environmental conditions, measured at time
+to in [<span class="math">\(mm^2/yr\)</span>] - material variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getEnvironmentalVariable">
+<tt class="descname">getEnvironmentalVariable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getEnvironmentalVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getEnvironmentalVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the environmental variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable. <span class="math">\(k_e\)</span> constant parameter which considers the influence of
+environment on <span class="math">\(D_o\)</span> in [-] - environmental variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getExecutionVariable">
+<tt class="descname">getExecutionVariable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getExecutionVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getExecutionVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the execution variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable. <span class="math">\(k_c\)</span> constant parameter which considers the influence of
+curing on <span class="math">\(D_o\)</span> in [-] - execution variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getFailureProbability">
+<tt class="descname">getFailureProbability</tt><big>(</big><em>age</em>, <em>analysis='FORM'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getFailureProbability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getFailureProbability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the probability of failure.</p>
+<p>For the onset of corrosion, the following limit state can be considered:</p>
+<div class="math" id="equation-eqPfChlor">
+<span class="eqno">(4)</span>\[\begin{split}P_f = Pr[C(d_c,t)&gt;C_{crit}]\end{split}\]</div>
+<p>Eq. <a href="#equation-eqPfChlor">(4)</a> states that the probability that the chloride content
+<span class="math">\(C\)</span> at the reinforcement at the cover depth <span class="math">\(d_c\)</span> is larger
+than the critical chloride content <span class="math">\(C_{crit}\)</span> should be smaller than
+some predefined value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>age (int):  exposure period in [<span class="math">\(yr\)</span>]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;FORM&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float. <span class="math">\(P_f\)</span> probability of chloride induced onset of corrosion</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getFailureProbabilityOverTime">
+<tt class="descname">getFailureProbabilityOverTime</tt><big>(</big><em>trials</em>, <em>age</em><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getFailureProbabilityOverTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getFailureProbabilityOverTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the probability of failure over time.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function has to be fixed!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>trials (int):  amount of trials for the monte carlo simulation</li>
+<li>age (int):  exposure period in [<span class="math">\(yr\)</span>]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>list  <span class="math">\(P_f(t)\)</span> probability of chloride induced onset of corrosion</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getSurfaceChlorideConcentration">
+<tt class="descname">getSurfaceChlorideConcentration</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getSurfaceChlorideConcentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getSurfaceChlorideConcentration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the surface chloride concentration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable.  <span class="math">\(C_s\)</span> surface chloride level in
+[<span class="math">\(wt.-\% Cl^-/binder\)</span>] environmental and material variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getTestVariable">
+<tt class="descname">getTestVariable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getTestVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getTestVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the test variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(k_t\)</span> constant parameter which considers the influence of
+test method on measured <span class="math">\(D_o\)</span> in [-] - test method variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.chloride.Chloride.getTimeTillCorrosion">
+<tt class="descname">getTimeTillCorrosion</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/chloride.html#Chloride.getTimeTillCorrosion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.chloride.Chloride.getTimeTillCorrosion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the time till corrosion.</p>
+<div class="math">
+\[t_{Cl}= \left(\frac{d^2}{4~k_e~k_t~k_c~D_o~(t_o)^n}~\left(erf^{-1}       \left(1-\frac{C_{crit}}{C_s}\right) \right)^{-2} \right)^{\frac{1}{1-n}}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float  <span class="math">\(t_{Cl}\)</span> time till corrosion, in [<span class="math">\(yr\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">No longer supported!</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="propagation-of-corrosion">
+<h2>4.6. Propagation of Corrosion<a class="headerlink" href="#propagation-of-corrosion" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="core.propagation.Propagation">
+<em class="property">class </em><tt class="descclassname">core.propagation.</tt><tt class="descname">Propagation</tt><big>(</big><em>environment</em><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Porpagation of corrosion</p>
+<p>The propagation period is defined as the period that extends from the moment
+at which steel depassivation is produced and the oxide mixture, known as
+“rust”, develops progressively to the structure reaches an unacceptable
+deterioration. This period can be determined from the so-called attack
+penetration function. This attack penetration function, <span class="math">\(P_x(t)\)</span>,
+represents the loss of rebar diameter at the time <span class="math">\(t\)</span> and it can be
+later implemented in the damage functions of the structural performance.</p>
+<p>In a rigorous form, the attack penetration function, <span class="math">\(P_x(t)\)</span>, takes
+the expression:</p>
+<div class="math" id="equation-eq92">
+<span class="eqno">(5)</span>\[P_x(t) = \int_{t_i}^{t} V_{corr}(\tau)d\tau\]</div>
+<p>where <span class="math">\(V_{corr}(\tau)\)</span> is the corrosion rate at the instant
+<span class="math">\(\tau\)</span> , and <span class="math">\(t_i\)</span> the initiation period. The function thus
+gives the progress of corrosion with time as a function of the corrosion
+rate <span class="math">\(V_{corr}\)</span> [<span class="math">\(mm/yr\)</span>].</p>
+<p>The main difficulty regarding the modeling of the damage function
+<span class="math">\(P_x(t)\)</span> lies in the establishment of the value of <span class="math">\(V_{corr}\)</span>,
+able to represent the particular corrosion process. There are three
+possibilities of establishing <span class="math">\(V_{corr}\)</span>:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>To assume values in function only of the exposure classes (and not of the type of attack)</li>
+<li>To estimate <span class="math">\(V_{corr}\)</span>,a from direct measurements of <span class="math">\(I_{corr}\)</span> (in specimens for new structures or on-site for existing ones)</li>
+<li>To use empirical expressions based on a variable governing the process (resistivity was selected, it is a positive decision, because it also governs the Initiation period, but it might be selected other one).</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Here method 3 is taken by using the Gehlen and Nilsson approach!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>environment</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.propagation.Propagation.getAgeFactorResistivity">
+<tt class="descname">getAgeFactorResistivity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getAgeFactorResistivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getAgeFactorResistivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the age factor resistivity.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">At the moment only OPC-Concrete is available!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable.  <span class="math">\(n\)</span> ageing factor of the resistivity in [-]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getChlorideCorrosionRateFactor">
+<tt class="descname">getChlorideCorrosionRateFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getChlorideCorrosionRateFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getChlorideCorrosionRateFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the chloride corrosion rate factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(F_{Cl}\)</span> chloride corrosion rate factor in [-]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getChlorideFactor">
+<tt class="descname">getChlorideFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getChlorideFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getChlorideFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the chloride factor.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Simplified implemented at the moment!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable.  <span class="math">\(k_{T,Cl}\)</span> chloride factor for the electrolytical
+resistivity in [-]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getChlorideInducedCorrosion">
+<tt class="descname">getChlorideInducedCorrosion</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getChlorideInducedCorrosion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getChlorideInducedCorrosion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the boolean for chloride induced corrosion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>boolean.  for chloride induced corrosion</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getCorrosionRate">
+<tt class="descname">getCorrosionRate</tt><big>(</big><em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getCorrosionRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getCorrosionRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the corrosion rate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(V_{corr}\)</span> the mean corrosion rate in [<span class="math">\(mm/yr\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getCorrosionRateData">
+<tt class="descname">getCorrosionRateData</tt><big>(</big><em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getCorrosionRateData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getCorrosionRateData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns data for the corrosion rate.</p>
+<p>Gehlen and Nilsson [ref] proposed to express the corrosion rate as:</p>
+<div class="math" id="equation-eq910">
+<span class="eqno">(6)</span>\[V_{corr}=\frac{m_0}{\rho}~F_{Cl}~F_{Galv}~F_{O2}\]</div>
+<p>in which the resistivity <span class="math">\(\rho\)</span> is determined by considering a
+potential resistivity <span class="math">\(\rho_o\)</span> to include the effect of the
+concrete properties and to correct this potential electrolytical
+resistivity with factors for test method, age, curing and environmental
+conditions.</p>
+<div class="math" id="equation-eq911">
+<span class="eqno">(7)</span>\[\rho = \rho_o~\left(\frac{t_{Hydr}}{t_o}\right)^n~k_t~k_c~k_{R,T}~k_{R,RH}~k_{R,Cl}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>list. <span class="math">\(V_{corr}\)</span> distribution data for the corrosion rate in [<span class="math">\(mm/yr\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getCuringFactor">
+<tt class="descname">getCuringFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getCuringFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getCuringFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the curing factor.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The curing factor was taken as a constant due to the lack of available
+data. Further research is needed to quantify <span class="math">\(k_c\)</span>.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>int.  <span class="math">\(k_c\)</span> curing factor for curing different from the standard
+curing in [-]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getGalvanicFactor">
+<tt class="descname">getGalvanicFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getGalvanicFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getGalvanicFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the galvanic factor.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Further study is needed to quantify the galvanic effect factor. This
+should be done by carefully study of the expected deterioration
+mechanism the detailing and placement of the rebars and the surrounding
+environmental condition.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the model is restricted to ordinary cases of carbonation with
+microcell corrosion, the galvanic factor is not relevant. Consequently,
+<span class="math">\(F_{Galv} = 1\)</span>.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>int. <span class="math">\(F_{Galv}\)</span> galvanic effect factor in [-]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getHumidityFactor">
+<tt class="descname">getHumidityFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getHumidityFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getHumidityFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the humidity factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable.  <span class="math">\(k_{R,RH}\)</span> humidity factor for the electrolytical
+resistivity in [-]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getModelUncertaintyFactor">
+<tt class="descname">getModelUncertaintyFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getModelUncertaintyFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getModelUncertaintyFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the model uncertainty factor.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Nilsson and Gehlen propose to use a constant <span class="math">\(m_o = 882\)</span> for the
+time being. The scatter then is included into the other parameters in
+the corrosion rate model. Should mo be better quantified in the near
+future, it is simple to change this constant into a stochastic
+parameter.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>int.  <span class="math">\(m_o\)</span> constant for corrosion rate versus resistivity in
+[<span class="math">\(\mu m \Omega m /yr\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getOxygenFactor">
+<tt class="descname">getOxygenFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getOxygenFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getOxygenFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the oxygen factor.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><span class="math">\(F_{O2}\)</span> is a factor expressing the effect of availability of
+oxygen to the corrosion process. Since data is very limited a
+statistical quantification cannot be made. However, since the supply of
+oxygen usually is believed not to be a limiting factor, except in
+submerged concrete, a crude alternative could be used: <span class="math">\(F_{O2} =
+1\)</span> in all cases except when the concrete is totally submerged when
+<span class="math">\(F_{O2}\)</span> should be zero. <span class="math">\(F_{O2} = 0\)</span></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>int. <span class="math">\(F_{O2}\)</span> oxygen availability factor in [-]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getPittingFactor">
+<tt class="descname">getPittingFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getPittingFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getPittingFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pitting factor.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A better model can be found in Steward 2004</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable.  <span class="math">\(\alpha\)</span> the pitting factor, taking into account the
+pitting effect in case of chloride corrosion, or the partial surface
+fraction depassivated when the carbonation is not complete in [-]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getStandardResistivity">
+<tt class="descname">getStandardResistivity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getStandardResistivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getStandardResistivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the standard resistivity.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">At the moment only OPC-Concrete is available!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable.  <span class="math">\(\rho_o\)</span> potential electrolytical resistivity measured
+with the standard test method at an age of 28 d in [<span class="math">\(\Omega m\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getTemperatureFactor">
+<tt class="descname">getTemperatureFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getTemperatureFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getTemperatureFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the temperature factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(K\)</span> value of the temperature factor for the electrolytical
+resistivity in [-]</li>
+<li>float. <span class="math">\(T\)</span> the temperature</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.getTestMethodFactor">
+<tt class="descname">getTestMethodFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.getTestMethodFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.getTestMethodFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the test method factor.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Simplified implemented at the moment!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>int.  <span class="math">\(k_t\)</span> test method factor if another test method is used to
+determine the potential electrolytical resistivity <span class="math">\(\rho_o\)</span> in
+[-]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.propagation.Propagation.setChlorideInducedCorrosion">
+<tt class="descname">setChlorideInducedCorrosion</tt><big>(</big><em>boolean</em><big>)</big><a class="reference internal" href="_modules/core/propagation.html#Propagation.setChlorideInducedCorrosion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.propagation.Propagation.setChlorideInducedCorrosion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set boolean for chloride induced corrosion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>boolean (boolean):  chloride induced corrosion True or False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Default :</th><td class="field-body"><ul class="first last simple">
+<li>boolean == True</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effects-of-corrosion">
+<h2>4.7. Effects of Corrosion<a class="headerlink" href="#effects-of-corrosion" title="Permalink to this headline">¶</a></h2>
+<p>If corrosion is initiated, the consequences are a reduction in the cross
+section of the reinforcement steel, increase in bar diameter resulting from
+the volumetric expansion of the corrosion products, and a change in the
+mechanical properties of the reinforcement and the concrete. <a class="reference internal" href="references.html#cabrera1996">[Cabrera1996]</a>
+These effects do not only involve serviceability, but may also affect its
+structural reliability and therefore the safety of the
+structure. Correspondingly the corrosion affects the reinforcement itself and
+the surrounding concrete.</p>
+<div class="section" id="general-corrosion">
+<h3>4.7.1. General Corrosion<a class="headerlink" href="#general-corrosion" title="Permalink to this headline">¶</a></h3>
+<p>General or uniform corrosion is caused by very high levels of chlorides or
+carbonation of concrete. It is typically associated with “rust” over the
+entire steel surface, which occupying a greater volume than the parent
+material. This can lead to cracking and spalling of the concrete cover. A loss
+of bond strength, caused by reinforcement slip that is initiated by corroded
+steel surfaces, and loss of reinforcement cross section may be the
+consequences of general corrosion, too. <a class="reference internal" href="references.html#osterminski2012">[Osterminski2012]</a></p>
+</div>
+<div class="section" id="pitting-corrosion">
+<h3>4.7.2. Pitting Corrosion<a class="headerlink" href="#pitting-corrosion" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="core.corrosion.Pitting">
+<em class="property">class </em><tt class="descclassname">core.corrosion.</tt><tt class="descname">Pitting</tt><big>(</big><em>reinforcement</em>, <em>propagation</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pitting corrosion</p>
+<p>Local or pitting corrosion is only associated with chloride induced
+corrosion. The area of the anode (active zone) may be relative small, but
+once corrosion has been initiated the resulting electrical field attracts
+negative chloride ions towards the pit. Hence, the corrosion rate can be
+relative high which leads to an extreme loss of steel cross
+section. <a class="reference internal" href="references.html#lifecon2003">[LIFECON2003]</a></p>
+<p>The <a class="reference internal" href="references.html#duracrete2000">[DuraCrete2000]</a> model provides only a very simplified model for the
+effects of pitting corrosion. For this reason, a hemispherical model of a
+pit, suggested by Val and Melchers (1997) and modified by Stewart (2004,
+2009, 2012), is used in this context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>reinforcement</li>
+<li>propagation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.corrosion.Pitting.getDeltaTime">
+<tt class="descname">getDeltaTime</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getDeltaTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getDeltaTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return time since corrosion has been started</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float. <span class="math">\(t_{corr}\)</span> time since corrosion has been stated</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getEmpiricalCoefficient">
+<tt class="descname">getEmpiricalCoefficient</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getEmpiricalCoefficient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getEmpiricalCoefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the empirical coefficient</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(ec\)</span> empirical coefficient for the mechanical behavior</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getLossOfArea">
+<tt class="descname">getLossOfArea</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getLossOfArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getLossOfArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random variable the area loss caused by corrosion</p>
+<div class="math">
+\[A_s(t) = A_{s,nom} − A_{pit}(t)\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(A_{s}(t)\)</span> distribution for the steal area in [<span class="math">\(mm^2\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getLossOfAreaData">
+<tt class="descname">getLossOfAreaData</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getLossOfAreaData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getLossOfAreaData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns data for the area loss caused by corrosion</p>
+<div class="math">
+\[A_s(t) = A_{s,nom} − A_{pit}(t)\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>list. <span class="math">\(A_{s}(t)\)</span> distribution data for steal area in [<span class="math">\(mm^2\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getLossOfYieldStress">
+<tt class="descname">getLossOfYieldStress</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getLossOfYieldStress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getLossOfYieldStress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random variable for the loss of yield strength caused by corrosion</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>random variable. <span class="math">\(f_{y}(t)\)</span> distribution for the yield strength in [<span class="math">\(N/mm^2\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getLossOfYieldStressData">
+<tt class="descname">getLossOfYieldStressData</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getLossOfYieldStressData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getLossOfYieldStressData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns data for the loss of yield strength caused by corrosion</p>
+<div class="math">
+\[f_y(t) = (1 − ec Q_{corr}(t)) f_{y,o}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>list. <span class="math">\(f_{y}(t)\)</span> distribution data for yield strength in [<span class="math">\(N/mm^2\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getMechanicalBehaviour">
+<tt class="descname">getMechanicalBehaviour</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getMechanicalBehaviour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getMechanicalBehaviour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the mechanical behavior of the reinforcement bar</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>tuple. <span class="math">\((p_{ductile},p_{brittle})\)</span> percentage for ductile or brittle behavior</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getPitArea">
+<tt class="descname">getPitArea</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getPitArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getPitArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns data for the pit area</p>
+<p>The pit configuration is used to predict the cross sectional area of the
+pit, denoted by <span class="math">\(A_{pit}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>list. <span class="math">\(A_{pit}(t)\)</span> distribution data for the pit area in [<span class="math">\(mm^2\)</span>]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getPitDepth">
+<tt class="descname">getPitDepth</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getPitDepth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getPitDepth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns data for the pit depth</p>
+<p>For simplicity, a hemispherical form of pits is assumed. The radius of the
+pit, <span class="math">\(p_{max}\)</span>, at time <span class="math">\(t\)</span>, can be estimated as</p>
+<div class="math">
+\[p_{max} (t) = V_{corr} t_{corr} R_{pit}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>list. <span class="math">\(p_{max}\)</span> distribution data for the pit depth in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getPittingFactor">
+<tt class="descname">getPittingFactor</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getPittingFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getPittingFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pitting factor</p>
+<p>According to <a class="reference internal" href="references.html#gonzalez1995">[Gonzalez1995]</a> is the corrosion rate for pitting corrosion
+four to eight times higher than the average penetration on the surface of
+a reinforcement bar.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first simple">
+<li>random variable. <span class="math">\(R_{pitt}\)</span> is  the ratio between maximum and
+average corrosion penetration and is called pitting factor</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li>ValueError: An error occurred if the input value is not available.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.getUniformCapacityLength">
+<tt class="descname">getUniformCapacityLength</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.getUniformCapacityLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.getUniformCapacityLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the uniform capacity length</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>int. <span class="math">\(L_U\)</span> is the uniform capacity length, referring to the
+distance along a structural member in which pitting corrosion will
+have a detrimental effect on structural capacity.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.setDeltaTime">
+<tt class="descname">setDeltaTime</tt><big>(</big><em>delta_time</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.setDeltaTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.setDeltaTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the time since corrosion has been started</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.corrosion.Pitting.setUniformCapacityLength">
+<tt class="descname">setUniformCapacityLength</tt><big>(</big><em>uniform_capacity_length</em><big>)</big><a class="reference internal" href="_modules/core/corrosion.html#Pitting.setUniformCapacityLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.corrosion.Pitting.setUniformCapacityLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set uniform capacity length</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first last simple">
+<li>uniform_capacity_length (int): uniform capacity length in [mm]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="modeling-structural-reliability">
+<h2>4.8. Modeling Structural Reliability<a class="headerlink" href="#modeling-structural-reliability" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="core.resistance.Resistance">
+<em class="property">class </em><tt class="descclassname">core.resistance.</tt><tt class="descname">Resistance</tt><big>(</big><em>concrete</em>, <em>reinforcement</em>, <em>geometrie</em>, <em>propagation</em>, <em>corrosion</em><big>)</big><a class="reference internal" href="_modules/core/resistance.html#Resistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.resistance.Resistance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modeling Structural Reliability</p>
+<p>Principally, structural reliability can be expressed as a set <span class="math">\(R\)</span> of
+random variables, describing the resistance of the structure, and a set
+<span class="math">\(S\)</span> to describe the internal stress. This principle be used for any
+kind of structure and design situation. Hence, it is difficult to make
+general statements for RC structures, because of their different geometries
+and load situations. One way to take these properties into account, is to
+normalize the random variables with respect to their nominal values. This
+makes the model applicable to a wide range of design situations.</p>
+<div class="math">
+\[X = \frac{X}{X_{nom}}X_{nom}\]</div>
+<p>The random variable for the resistance can be taken as the strength of the
+RC structure. Likewise, can the random variable for the internal strength or
+stress be taken as the load effect (moment, shear, etc.), which is
+considered as dimensionally consistent with the resistance. Both of them can
+be used directly to formulate the limit state function. <a class="reference internal" href="references.html#ellingwood1980">[Ellingwood1980]</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes :</th><td class="field-body"><ul class="first last simple">
+<li>concrete</li>
+<li>reinforcement</li>
+<li>geometry</li>
+<li>propagation</li>
+<li>corrosion</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="core.resistance.Resistance.getBeta">
+<tt class="descname">getBeta</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/core/resistance.html#Resistance.getBeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.resistance.Resistance.getBeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the beta value for the RC structure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float. <span class="math">\(\beta\)</span> reliability index</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.resistance.Resistance.getFailureNominal">
+<tt class="descname">getFailureNominal</tt><big>(</big><em>delta_time=None</em>, <em>analysis='FORM'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/resistance.html#Resistance.getFailureNominal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.resistance.Resistance.getFailureNominal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the probability of failure without damage caused by corrosion</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;FORM&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float. <span class="math">\(p_f\)</span> probability of failure without corrosion</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.resistance.Resistance.getFailureProbability">
+<tt class="descname">getFailureProbability</tt><big>(</big><em>delta_time=None</em>, <em>analysis='FORM'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/resistance.html#Resistance.getFailureProbability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.resistance.Resistance.getFailureProbability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the probability of failure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;FORM&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>float. <span class="math">\(p_f\)</span> probability of failure</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="core.resistance.Resistance.getResistanceData">
+<tt class="descname">getResistanceData</tt><big>(</big><em>delta_time=None</em>, <em>analysis='DistributionAnalysis'</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/core/resistance.html#Resistance.getResistanceData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#core.resistance.Resistance.getResistanceData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns data for the resistance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args :</th><td class="field-body"><ul class="first simple">
+<li>delta_time (float): time since corrosion has been started in [yr]</li>
+<li>analysis (str): Performed reliability analysis e.g. &#8216;DistributionAnalysis&#8217;</li>
+<li>options (AnalysisOption): Option for the reliability analysis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><ul class="first last simple">
+<li>list. <span class="math">\(R\)</span> distribution data for the resistance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/Logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. Probabilistic Models for Degradation of Concrete</a><ul>
+<li><a class="reference internal" href="#material-properties">4.1. Material Properties</a><ul>
+<li><a class="reference internal" href="#concrete">4.1.1. Concrete</a></li>
+<li><a class="reference internal" href="#reinforcement">4.1.2. Reinforcement</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#environmental-actions">4.2. Environmental Actions</a></li>
+<li><a class="reference internal" href="#geometric-properties">4.3. Geometric Properties</a></li>
+<li><a class="reference internal" href="#carbonation-induced-corrosion">4.4. Carbonation Induced Corrosion</a></li>
+<li><a class="reference internal" href="#chloride-induced-corrosion">4.5. Chloride Induced Corrosion</a></li>
+<li><a class="reference internal" href="#propagation-of-corrosion">4.6. Propagation of Corrosion</a></li>
+<li><a class="reference internal" href="#effects-of-corrosion">4.7. Effects of Corrosion</a><ul>
+<li><a class="reference internal" href="#general-corrosion">4.7.1. General Corrosion</a></li>
+<li><a class="reference internal" href="#pitting-corrosion">4.7.2. Pitting Corrosion</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modeling-structural-reliability">4.8. Modeling Structural Reliability</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="theory.html"
+                        title="previous chapter">3. Theoretical Background</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="references.html"
+                        title="next chapter">5. List of References</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/model.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="5. List of References"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="theory.html" title="3. Theoretical Background"
+             >previous</a> |</li>
+        <li><a href="index.html">CoRe 1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

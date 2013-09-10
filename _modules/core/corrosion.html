@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.corrosion &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for core.corrosion</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python -tt</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c"># Time-stamp: &lt;Mon 2013-09-09 18:24 juergen&gt;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">scrnd</span>
+
+<span class="kn">from</span> <span class="nn">pyre</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="Pitting"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting">[docs]</a><span class="k">class</span> <span class="nc">Pitting</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Pitting corrosion</span>
+
+<span class="sd">  Local or pitting corrosion is only associated with chloride induced</span>
+<span class="sd">  corrosion. The area of the anode (active zone) may be relative small, but</span>
+<span class="sd">  once corrosion has been initiated the resulting electrical field attracts</span>
+<span class="sd">  negative chloride ions towards the pit. Hence, the corrosion rate can be</span>
+<span class="sd">  relative high which leads to an extreme loss of steel cross</span>
+<span class="sd">  section. [LIFECON2003]_</span>
+
+<span class="sd">  The [DuraCrete2000]_ model provides only a very simplified model for the</span>
+<span class="sd">  effects of pitting corrosion. For this reason, a hemispherical model of a</span>
+<span class="sd">  pit, suggested by Val and Melchers (1997) and modified by Stewart (2004,</span>
+<span class="sd">  2009, 2012), is used in this context.</span>
+
+<span class="sd">  :Attributes:</span>
+<span class="sd">    - reinforcement</span>
+<span class="sd">    - propagation</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reinforcement</span><span class="p">,</span><span class="n">propagation</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span> <span class="o">=</span> <span class="n">reinforcement</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span> <span class="o">=</span> <span class="n">propagation</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">uniform_capacity_length</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">pt_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">apit_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_area</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Pitting.setDeltaTime"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.setDeltaTime">[docs]</a>  <span class="k">def</span> <span class="nf">setDeltaTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the time since corrosion has been started</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span> <span class="o">=</span> <span class="n">delta_time</span>
+</div>
+<div class="viewcode-block" id="Pitting.getDeltaTime"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getDeltaTime">[docs]</a>  <span class="k">def</span> <span class="nf">getDeltaTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return time since corrosion has been started</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - float. :math:`t_{corr}` time since corrosion has been stated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span>
+</div>
+<div class="viewcode-block" id="Pitting.setUniformCapacityLength"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.setUniformCapacityLength">[docs]</a>  <span class="k">def</span> <span class="nf">setUniformCapacityLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">uniform_capacity_length</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set uniform capacity length</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - uniform_capacity_length (int): uniform capacity length in [mm]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">uniform_capacity_length</span> <span class="o">=</span> <span class="n">uniform_capacity_length</span>
+</div>
+<div class="viewcode-block" id="Pitting.getUniformCapacityLength"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getUniformCapacityLength">[docs]</a>  <span class="k">def</span> <span class="nf">getUniformCapacityLength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the uniform capacity length</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - int. :math:`L_U` is the uniform capacity length, referring to the</span>
+<span class="sd">        distance along a structural member in which pitting corrosion will</span>
+<span class="sd">        have a detrimental effect on structural capacity. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform_capacity_length</span>
+</div>
+<div class="viewcode-block" id="Pitting.getPittingFactor"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getPittingFactor">[docs]</a>  <span class="k">def</span> <span class="nf">getPittingFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the pitting factor</span>
+
+<span class="sd">    According to [Gonzalez1995]_ is the corrosion rate for pitting corrosion</span>
+<span class="sd">    four to eight times higher than the average penetration on the surface of</span>
+<span class="sd">    a reinforcement bar.</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable. :math:`R_{pitt}` is  the ratio between maximum and</span>
+<span class="sd">        average corrosion penetration and is called pitting factor</span>
+
+<span class="sd">    :Raises:</span>
+<span class="sd">      - ValueError: An error occurred if the input value is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getDiameter</span><span class="p">()</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">10</span><span class="p">,</span><span class="mf">5.65</span><span class="p">,</span><span class="mf">0.22</span><span class="p">,</span><span class="mf">5.08</span><span class="p">,</span><span class="mf">1.02</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mf">6.2</span><span class="p">,</span><span class="mf">0.18</span><span class="p">,</span><span class="mf">5.56</span><span class="p">,</span><span class="mf">1.16</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">27</span><span class="p">,</span><span class="mf">7.1</span><span class="p">,</span><span class="mf">0.17</span><span class="p">,</span><span class="mf">6.55</span><span class="p">,</span><span class="mf">1.07</span><span class="p">]]</span>
+
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">CoV</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">mu_o</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">alpha_o</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">break</span>
+      <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="n">table</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&quot;Error: &#39;diameter&#39; value is not in the list&quot;</span><span class="p">)</span>
+
+    <span class="n">Lo</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">LU</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getUniformCapacityLength</span><span class="p">()</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">mu_o</span><span class="o">+</span><span class="n">alpha_o</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">LU</span><span class="o">*</span><span class="n">Lo</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha_o</span>
+
+    <span class="n">pitting_factor</span> <span class="o">=</span> <span class="n">Gumbel</span><span class="p">(</span><span class="s">&#39;R&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pitting_factor</span>
+</div>
+<div class="viewcode-block" id="Pitting.getPitDepth"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getPitDepth">[docs]</a>  <span class="k">def</span> <span class="nf">getPitDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns data for the pit depth</span>
+
+<span class="sd">    For simplicity, a hemispherical form of pits is assumed. The radius of the</span>
+<span class="sd">    pit, :math:`p_{max}`, at time :math:`t`, can be estimated as</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       p_{max} (t) = V_{corr} t_{corr} R_{pit}</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - list. :math:`p_{max}` distribution data for the pit depth in [mm]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_pt(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">pt_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pt_data</span>
+</div>
+  <span class="k">def</span> <span class="nf">getCorrosionRate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span>
+
+  <span class="k">def</span> <span class="nf">setCorrosionRate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">corrosion_rate</span><span class="p">,</span><span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">corrosion_rate</span><span class="p">,</span><span class="n">theta</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Pitting.getPitArea"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getPitArea">[docs]</a>  <span class="k">def</span> <span class="nf">getPitArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns data for the pit area</span>
+
+<span class="sd">    The pit configuration is used to predict the cross sectional area of the</span>
+<span class="sd">    pit, denoted by :math:`A_{pit}`.</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - list. :math:`A_{pit}(t)` distribution data for the pit area in [:math:`mm^2`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_apit(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">apit_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apit_data</span>
+</div>
+<div class="viewcode-block" id="Pitting.getLossOfAreaData"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getLossOfAreaData">[docs]</a>  <span class="k">def</span> <span class="nf">getLossOfAreaData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns data for the area loss caused by corrosion </span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       A_s(t) = A_{s,nom} − A_{pit}(t)</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - list. :math:`A_{s}(t)` distribution data for steal area in [:math:`mm^2`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="n">Do</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getBarDiameter</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">():</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_area_loss_pitting(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_area_loss_general(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span>
+</div>
+<div class="viewcode-block" id="Pitting.getLossOfArea"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getLossOfArea">[docs]</a>  <span class="k">def</span> <span class="nf">getLossOfArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a random variable the area loss caused by corrosion</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       A_s(t) = A_{s,nom} − A_{pit}(t)</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable. :math:`A_{s}(t)` distribution for the steal area in [:math:`mm^2`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLossOfAreaData</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span><span class="n">analysis</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span>
+
+    <span class="n">shape</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">lognorm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">floc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">shape</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="n">p4</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_area</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;Ast&#39;</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">p3</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_area</span>
+</div>
+  <span class="k">def</span> <span class="nf">getFunctionValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">name</span>
+
+<div class="viewcode-block" id="Pitting.getMechanicalBehaviour"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getMechanicalBehaviour">[docs]</a>  <span class="k">def</span> <span class="nf">getMechanicalBehaviour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the mechanical behavior of the reinforcement bar</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - tuple. :math:`(p_{ductile},p_{brittle})` percentage for ductile or brittle behavior</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Qlimit</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c">#[%]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLossOfAreaData</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span><span class="n">analysis</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span>
+
+    <span class="n">ductile</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">Qcorr</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">Qcorr</span> <span class="o">&lt;</span> <span class="n">Qlimit</span><span class="p">:</span>
+        <span class="n">ductile</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">ductile</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ductile</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">brittle</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">ductile</span>
+    <span class="n">behaviour</span> <span class="o">=</span> <span class="n">ductile</span><span class="p">,</span><span class="n">brittle</span>
+    <span class="k">return</span> <span class="n">behaviour</span>
+</div>
+<div class="viewcode-block" id="Pitting.getEmpiricalCoefficient"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getEmpiricalCoefficient">[docs]</a>  <span class="k">def</span> <span class="nf">getEmpiricalCoefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the empirical coefficient</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable. :math:`ec` empirical coefficient for the mechanical behavior</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mf">0.005</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">mu</span><span class="o">*</span><span class="mf">0.2</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mf">0.017</span>
+    <span class="c">#alpha, beta = BetaAlphaBeta(mu,sigma,a,b)</span>
+    <span class="n">empirical_coefficient</span> <span class="o">=</span> <span class="n">Beta</span><span class="p">(</span><span class="s">&#39;ec&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">empirical_coefficient</span>
+</div>
+<div class="viewcode-block" id="Pitting.getLossOfYieldStressData"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getLossOfYieldStressData">[docs]</a>  <span class="k">def</span> <span class="nf">getLossOfYieldStressData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns data for the loss of yield strength caused by corrosion </span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       f_y(t) = (1 − ec Q_{corr}(t)) f_{y,o}</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - list. :math:`f_{y}(t)` distribution data for yield strength in [:math:`N/mm^2`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="n">Do</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getBarDiameter</span><span class="p">()</span>
+    <span class="n">ec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getEmpiricalCoefficient</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">():</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_yield_loss_pitting(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec)&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_yield_loss_general(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec)&#39;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span>
+</div>
+<div class="viewcode-block" id="Pitting.getLossOfYieldStress"><a class="viewcode-back" href="../../model.html#core.corrosion.Pitting.getLossOfYieldStress">[docs]</a>  <span class="k">def</span> <span class="nf">getLossOfYieldStress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a random variable for the loss of yield strength caused by corrosion</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - random variable. :math:`f_{y}(t)` distribution for the yield strength in [:math:`N/mm^2`]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span>   <span class="bp">self</span><span class="o">.</span><span class="n">getLossOfYieldStressData</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span><span class="n">analysis</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span>
+
+    <span class="n">shape</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">lognorm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">floc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">shape</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="n">p4</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_yield</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;fyt&#39;</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">p3</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_yield</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

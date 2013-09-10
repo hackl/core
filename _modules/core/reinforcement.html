@@ -1,0 +1,217 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.reinforcement &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for core.reinforcement</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python -tt</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">pyre</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="Reinforcement"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement">[docs]</a><span class="k">class</span> <span class="nc">Reinforcement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Reinforcement</span>
+
+<span class="sd">  Because of the low tensile strength of concrete, it is reinforced with steel</span>
+<span class="sd">  bars or wires that resist the tensile stresses.</span>
+
+<span class="sd">  :Attributes:</span>
+<span class="sd">    - name (str): Name of the steal e.g. &#39;S500&#39;</span>
+<span class="sd">    - yield_strength (float): yield strength of the steal</span>
+<span class="sd">    - diameter (float): Diameter of the steal bar</span>
+<span class="sd">    - bars (int): Amount on reinforcement</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">yield_stress</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bars</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Reinforcement.setYieldStress"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.setYieldStress">[docs]</a>  <span class="k">def</span> <span class="nf">setYieldStress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yield_stress</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Define a yield strength for the steal</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - yield_stress (float): yield stress for the reinforcement</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">yield_stress</span> <span class="o">=</span> <span class="n">yield_stress</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.getYieldStress"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.getYieldStress">[docs]</a>  <span class="k">def</span> <span class="nf">getYieldStress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the yield strength</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - yield_stress (float): Returns the yield strength of the reinforcement bar</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_stress</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_stress</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.setDiameter"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.setDiameter">[docs]</a>  <span class="k">def</span> <span class="nf">setDiameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set an initial diameter</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - diameter (float): initial diameter of the reinforcement bar</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="n">diameter</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.getDiameter"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.getDiameter">[docs]</a>  <span class="k">def</span> <span class="nf">getDiameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the initial diameter</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - diameter (float): Returns the initial diameter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.getBarDiameter"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.getBarDiameter">[docs]</a>  <span class="k">def</span> <span class="nf">getBarDiameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the bar diameter</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - bar_diameter (random): Returns the bar diameter as a random variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">mu</span><span class="o">*</span><span class="mf">0.01</span>
+    <span class="n">bar_diameter</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;Do&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bar_diameter</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.setBars"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.setBars">[docs]</a>  <span class="k">def</span> <span class="nf">setBars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bars</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set amount of reinforcement bars</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - bars (int): Amount of reinforcement bars</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bars</span> <span class="o">=</span> <span class="n">bars</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.getBars"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.getBars">[docs]</a>  <span class="k">def</span> <span class="nf">getBars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the amount of reinforcement bars</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - bars (int): Returns the amount of reinforcement bars</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">bars</span> <span class="o">!=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bars</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.getNominalBarArea"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.getNominalBarArea">[docs]</a>  <span class="k">def</span> <span class="nf">getNominalBarArea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the cross-section area of the reinforcement bar</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - bar_area (random): Returns a random variable for the cross-section area</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDiameter</span><span class="p">()</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">4</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">mu</span><span class="o">*</span><span class="mf">0.02</span>
+    <span class="n">bar_area</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bar_area</span>
+</div>
+<div class="viewcode-block" id="Reinforcement.getYieldStrength"><a class="viewcode-back" href="../../model.html#core.reinforcement.Reinforcement.getYieldStrength">[docs]</a>  <span class="k">def</span> <span class="nf">getYieldStrength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the yield strength</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - yield strength (random): Returns the yield strength as a random variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># mu = 560</span>
+    <span class="c"># sigma = 37 #30</span>
+    <span class="c"># yield_strength = Normal(&#39;fy&#39;,mu,sigma)</span>
+
+    <span class="c"># JCSS</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mi">560</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mi">30</span> <span class="c">#30</span>
+    <span class="n">yield_strength</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;fy&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">yield_strength</span>
+</div>
+  <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

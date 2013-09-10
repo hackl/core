@@ -1,0 +1,548 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.resistance &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for core.resistance</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python -tt</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c"># Time-stamp: &lt;Tue 2013-09-10 08:30 juergen&gt;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">scrnd</span>
+
+<span class="kn">from</span> <span class="nn">pyre</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="Resistance"><a class="viewcode-back" href="../../model.html#core.resistance.Resistance">[docs]</a><span class="k">class</span> <span class="nc">Resistance</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Modeling Structural Reliability</span>
+
+<span class="sd">  Principally, structural reliability can be expressed as a set :math:`R` of</span>
+<span class="sd">  random variables, describing the resistance of the structure, and a set</span>
+<span class="sd">  :math:`S` to describe the internal stress. This principle be used for any</span>
+<span class="sd">  kind of structure and design situation. Hence, it is difficult to make</span>
+<span class="sd">  general statements for RC structures, because of their different geometries</span>
+<span class="sd">  and load situations. One way to take these properties into account, is to</span>
+<span class="sd">  normalize the random variables with respect to their nominal values. This</span>
+<span class="sd">  makes the model applicable to a wide range of design situations.</span>
+
+<span class="sd">  .. math::</span>
+
+<span class="sd">     X = \\frac{X}{X_{nom}}X_{nom}</span>
+
+<span class="sd">  The random variable for the resistance can be taken as the strength of the</span>
+<span class="sd">  RC structure. Likewise, can the random variable for the internal strength or</span>
+<span class="sd">  stress be taken as the load effect (moment, shear, etc.), which is</span>
+<span class="sd">  considered as dimensionally consistent with the resistance. Both of them can</span>
+<span class="sd">  be used directly to formulate the limit state function. [Ellingwood1980]_</span>
+
+<span class="sd">  :Attributes:</span>
+<span class="sd">    - concrete</span>
+<span class="sd">    - reinforcement</span>
+<span class="sd">    - geometry</span>
+<span class="sd">    - propagation</span>
+<span class="sd">    - corrosion</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">concrete</span><span class="p">,</span><span class="n">reinforcement</span><span class="p">,</span><span class="n">geometrie</span><span class="p">,</span><span class="n">propagation</span><span class="p">,</span><span class="n">corrosion</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">concrete</span> <span class="o">=</span> <span class="n">concrete</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span> <span class="o">=</span> <span class="n">reinforcement</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">geometrie</span> <span class="o">=</span> <span class="n">geometrie</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span> <span class="o">=</span> <span class="n">propagation</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span> <span class="o">=</span> <span class="n">corrosion</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">uniform_capacity_length</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">pt_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">apit_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">R_data</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_area</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">failure_probability</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+  <span class="k">def</span> <span class="nf">setDeltaTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+  <span class="k">def</span> <span class="nf">getDeltaTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span>
+
+  <span class="k">def</span> <span class="nf">setUniformCapacityLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">uniform_capacity_length</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">uniform_capacity_length</span> <span class="o">=</span> <span class="n">uniform_capacity_length</span>
+
+  <span class="k">def</span> <span class="nf">getUniformCapacityLength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform_capacity_length</span>
+
+  <span class="k">def</span> <span class="nf">getPittingFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getDiameter</span><span class="p">()</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">10</span><span class="p">,</span><span class="mf">5.65</span><span class="p">,</span><span class="mf">0.22</span><span class="p">,</span><span class="mf">5.08</span><span class="p">,</span><span class="mf">1.02</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mf">6.2</span><span class="p">,</span><span class="mf">0.18</span><span class="p">,</span><span class="mf">5.56</span><span class="p">,</span><span class="mf">1.16</span><span class="p">],</span>
+             <span class="p">[</span><span class="mi">27</span><span class="p">,</span><span class="mf">7.1</span><span class="p">,</span><span class="mf">0.17</span><span class="p">,</span><span class="mf">6.55</span><span class="p">,</span><span class="mf">1.07</span><span class="p">]]</span>
+
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">CoV</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">mu_o</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">alpha_o</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">break</span>
+      <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="n">table</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&quot;Error: &#39;diameter&#39; value is not in the list&quot;</span><span class="p">)</span>
+
+    <span class="n">Lo</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">LU</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getUniformCapacityLength</span><span class="p">()</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">mu_o</span><span class="o">+</span><span class="n">alpha_o</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">LU</span><span class="o">*</span><span class="n">Lo</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha_o</span>
+
+    <span class="n">pitting_factor</span> <span class="o">=</span> <span class="n">Gumbel</span><span class="p">(</span><span class="s">&#39;R&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pitting_factor</span>
+
+  <span class="k">def</span> <span class="nf">getPitDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_pt(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">pt_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pt_data</span>
+
+  <span class="k">def</span> <span class="nf">getCorrosionRate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span>
+
+  <span class="k">def</span> <span class="nf">setCorrosionRate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">corrosion_rate</span><span class="p">,</span><span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">corrosion_rate</span><span class="p">,</span><span class="n">theta</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">getPitArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_apit(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">apit_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+  <span class="k">def</span> <span class="nf">getLossOfAreaData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="n">Do</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getBarDiameter</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">():</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_area_loss_pitting(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_area_loss_general(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;)&#39;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span>
+
+  <span class="k">def</span> <span class="nf">getLossOfArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLossOfAreaData</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span><span class="n">analysis</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span>
+
+    <span class="n">shape</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">lognorm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">floc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">shape</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="n">p4</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_area</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;Ast&#39;</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">p3</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_area</span>
+
+  <span class="k">def</span> <span class="nf">getFunctionValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">name</span>
+
+  <span class="k">def</span> <span class="nf">getMechanicalBehaviour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">Qlimit</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c">#[%]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLossOfAreaData</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span><span class="n">analysis</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_data</span>
+
+    <span class="n">ductile</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">Qcorr</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">Qcorr</span> <span class="o">&lt;</span> <span class="n">Qlimit</span><span class="p">:</span>
+        <span class="n">ductile</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">ductile</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ductile</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">brittle</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">ductile</span>
+    <span class="n">behaviour</span> <span class="o">=</span> <span class="n">ductile</span><span class="p">,</span><span class="n">brittle</span>
+    <span class="k">return</span> <span class="n">behaviour</span>
+
+  <span class="k">def</span> <span class="nf">getEmpiricalCoefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mf">0.005</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">mu</span><span class="o">*</span><span class="mf">0.2</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mf">0.017</span>
+    <span class="c">#alpha, beta = BetaAlphaBeta(mu,sigma,a,b)</span>
+    <span class="n">empirical_coefficient</span> <span class="o">=</span> <span class="n">Beta</span><span class="p">(</span><span class="s">&#39;ec&#39;</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">empirical_coefficient</span>
+
+  <span class="k">def</span> <span class="nf">getLossOfYieldStressData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="n">Do</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getBarDiameter</span><span class="p">()</span>
+    <span class="n">ec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getEmpiricalCoefficient</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">():</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_yield_loss_pitting(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec)&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_yield_loss_general(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec)&#39;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span>
+
+  <span class="k">def</span> <span class="nf">getLossOfYieldStress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span>   <span class="bp">self</span><span class="o">.</span><span class="n">getLossOfYieldStressData</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span><span class="n">analysis</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yield_data</span>
+
+    <span class="n">shape</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">lognorm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">floc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">shape</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="n">p4</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_yield</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;fyt&#39;</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">p3</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_of_yield</span>
+
+<div class="viewcode-block" id="Resistance.getResistanceData"><a class="viewcode-back" href="../../model.html#core.resistance.Resistance.getResistanceData">[docs]</a>  <span class="k">def</span> <span class="nf">getResistanceData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns data for the resistance</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;DistributionAnalysis&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - list. :math:`R` distribution data for the resistance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="n">Do</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getBarDiameter</span><span class="p">()</span>
+
+    <span class="n">ec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getEmpiricalCoefficient</span><span class="p">()</span>
+
+    <span class="n">ME</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;ME&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometrie</span><span class="o">.</span><span class="n">getBeamHeight</span><span class="p">()</span><span class="o">*</span><span class="mf">0.001</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometrie</span><span class="o">.</span><span class="n">getBeamWidth</span><span class="p">()</span><span class="o">*</span><span class="mf">0.001</span>
+
+    <span class="n">hv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;h&#39;</span><span class="p">,</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">bv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="n">fc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concrete</span><span class="o">.</span><span class="n">getCompressiveStrength</span><span class="p">()</span>
+    <span class="n">fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getYieldStrength</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">():</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_resistance_pitting(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec,ME,&#39;</span><span class="o">+</span><span class="n">hv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">bv</span><span class="o">+</span><span class="s">&#39;,fc,fy,)&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_resistance_general(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec,ME,&#39;</span><span class="o">+</span><span class="n">hv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">bv</span><span class="o">+</span><span class="s">&#39;,fc,fy,)&#39;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;DistributionAnalysis&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">DistributionAnalysis</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">R_data</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getDistributionData</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_data</span>
+
+</div>
+<div class="viewcode-block" id="Resistance.getFailureProbability"><a class="viewcode-back" href="../../model.html#core.resistance.Resistance.getFailureProbability">[docs]</a>  <span class="k">def</span> <span class="nf">getFailureProbability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;FORM&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the probability of failure</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;FORM&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - float. :math:`p_f` probability of failure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Vcorr</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getCorrosionRate</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Vcorrv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;Vcorr&#39;</span><span class="p">,</span><span class="n">Vcorr</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getPittingFactor</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">delta_time</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getDeltaTime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">delta_time</span>
+
+    <span class="n">Do</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getBarDiameter</span><span class="p">()</span>
+    <span class="n">ec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrosion</span><span class="o">.</span><span class="n">getEmpiricalCoefficient</span><span class="p">()</span>
+
+    <span class="n">ME</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;ME&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometrie</span><span class="o">.</span><span class="n">getBeamHeight</span><span class="p">()</span><span class="o">*</span><span class="mf">0.001</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometrie</span><span class="o">.</span><span class="n">getBeamWidth</span><span class="p">()</span><span class="o">*</span><span class="mf">0.001</span>
+
+    <span class="n">hv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;h&#39;</span><span class="p">,</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">bv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="n">fc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concrete</span><span class="o">.</span><span class="n">getCompressiveStrength</span><span class="p">()</span>
+    <span class="n">fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="o">.</span><span class="n">getYieldStrength</span><span class="p">()</span>
+
+    <span class="n">ym</span> <span class="o">=</span> <span class="mf">1.4</span>
+    <span class="n">yQ</span> <span class="o">=</span> <span class="mf">1.5</span>
+    <span class="n">yG</span> <span class="o">=</span> <span class="mf">1.35</span>
+
+    <span class="n">Rk</span> <span class="o">=</span> <span class="o">.</span><span class="mi">871435</span><span class="c">#0.829938#.83#.59#.5396#0.647</span>
+    <span class="n">Gk</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">Qk</span> <span class="o">=</span> <span class="mf">2.037</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">yG</span><span class="o">*</span><span class="n">Gk</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">yQ</span><span class="o">*</span><span class="n">Qk</span><span class="p">)</span><span class="o">*</span><span class="n">ym</span><span class="o">*</span><span class="n">Rk</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">Re</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;Re&#39;</span><span class="p">,</span><span class="mf">1.05</span><span class="p">,</span><span class="mf">1.05</span><span class="o">*</span><span class="mf">0.11</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;G&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">Gumbel</span><span class="p">(</span><span class="s">&#39;Q&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.4</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span><span class="o">.</span><span class="n">getChlorideInducedCorrosion</span><span class="p">():</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_failure_pitting(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec,ME,&#39;</span><span class="o">+</span><span class="n">hv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">bv</span><span class="o">+</span><span class="s">&#39;,fc,fy,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,Re,G,Q)&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_failure_general(&#39;</span><span class="o">+</span><span class="n">Vcorrv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,R,Do,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,ec,ME,&#39;</span><span class="o">+</span><span class="n">hv</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="n">bv</span><span class="o">+</span><span class="s">&#39;,fc,fy,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,Re,G,Q)&#39;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;FORM&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">Form</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+      <span class="c">#Analysis = CrudeMonteCarlo(options)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">failure_probability</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getFailure</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getBeta</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">corrosion_rate</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">failure_probability</span>
+</div>
+<div class="viewcode-block" id="Resistance.getBeta"><a class="viewcode-back" href="../../model.html#core.resistance.Resistance.getBeta">[docs]</a>  <span class="k">def</span> <span class="nf">getBeta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the beta value for the RC structure</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - float. :math:`\\beta` reliability index</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+</div>
+<div class="viewcode-block" id="Resistance.getFailureNominal"><a class="viewcode-back" href="../../model.html#core.resistance.Resistance.getFailureNominal">[docs]</a>  <span class="k">def</span> <span class="nf">getFailureNominal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">analysis</span><span class="o">=</span><span class="s">&#39;FORM&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the probability of failure without damage caused by corrosion</span>
+
+<span class="sd">    :Args:</span>
+<span class="sd">      - delta_time (float): time since corrosion has been started in [yr]</span>
+<span class="sd">      - analysis (str): Performed reliability analysis e.g. &#39;FORM&#39;</span>
+<span class="sd">      - options (AnalysisOption): Option for the reliability analysis</span>
+
+<span class="sd">    :Returns:</span>
+<span class="sd">      - float. :math:`p_f` probability of failure without corrosion</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ME</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;ME&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="n">ym</span> <span class="o">=</span> <span class="mf">1.4</span>
+    <span class="n">yQ</span> <span class="o">=</span> <span class="mf">1.5</span>
+    <span class="n">yG</span> <span class="o">=</span> <span class="mf">1.35</span>
+
+    <span class="n">Rk</span> <span class="o">=</span> <span class="o">.</span><span class="mi">871435</span>
+    <span class="n">Gk</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">Qk</span> <span class="o">=</span> <span class="mf">2.037</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">yG</span><span class="o">*</span><span class="n">Gk</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">yQ</span><span class="o">*</span><span class="n">Qk</span><span class="p">)</span><span class="o">*</span><span class="n">ym</span><span class="o">*</span><span class="n">Rk</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">Re</span> <span class="o">=</span> <span class="n">Lognormal</span><span class="p">(</span><span class="s">&#39;Re&#39;</span><span class="p">,</span><span class="mf">1.05</span><span class="p">,</span><span class="mf">1.05</span><span class="o">*</span><span class="mf">0.11</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="s">&#39;G&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">Gumbel</span><span class="p">(</span><span class="s">&#39;Q&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.4</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="n">AnalysisOptions</span><span class="p">()</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s">&#39;gfun_failure_nom(ME,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;,Re,G,Q)&#39;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">LimitStateFunction</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">analysis</span> <span class="o">==</span> <span class="s">&#39;FORM&#39;</span><span class="p">:</span>
+      <span class="n">Analysis</span> <span class="o">=</span> <span class="n">Form</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+      <span class="c">#Analysis = CrudeMonteCarlo(options)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">failure_probability</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getFailure</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">Analysis</span><span class="o">.</span><span class="n">getBeta</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">failure_probability</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">CoRe 1.0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

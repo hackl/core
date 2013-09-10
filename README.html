@@ -1,0 +1,223 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Introduction &mdash; CoRe 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CoRe 1.0.1 documentation" href="index.html" />
+    <link rel="next" title="2. Installation" href="install.html" />
+    <link rel="prev" title="PyRe documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="2. Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="PyRe documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CoRe 1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">September 2013</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Authors:</th><td class="field-body">Jürgen Hackl</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Contact:</th><td class="field-body"><a class="reference external" href="mailto:hackl&#46;j&#37;&#52;&#48;gmx&#46;at">hackl<span>&#46;</span>j<span>&#64;</span>gmx<span>&#46;</span>at</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Web site:</th><td class="field-body"><a class="reference external" href="http://github.com/hackl/core">http://github.com/hackl/core</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Copyright:</th><td class="field-body">This document has been placed in the public domain.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">License:</th><td class="field-body">CoRe is released under the GNU General Public Licence.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Version:</th><td class="field-body">1.0.1</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you have any problems, found bugs in the code or have feature request
+comments or questions, please feel free to send a mail to <a class="reference external" href="mailto:hackl&#46;j&#37;&#52;&#48;gmx&#46;at">Jürgen Hackl</a>.</p>
+</div>
+<div class="section" id="purpose">
+<h2>1.1. Purpose<a class="headerlink" href="#purpose" title="Permalink to this headline">¶</a></h2>
+<p>CoRe (Concrete Reliability) is meant to provide a generic framework for
+stochastic modeling of reinforced concrete deterioration caused by
+corrosion. Thereby, the combination of structural reliability analysis and
+Bayesian networks provides a powerful tool for a computationally efficient and
+robust method, computing probabilities of rare events in complex structures,
+and also allows Bayesian updating of the model with measurements, monitoring
+and inspection results.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <a class="reference external" href="http://github.com/hackl/core">CoRe</a> modul needs also the <a class="reference external" href="http://github.com/hackl/pyre">PyRe</a> and the <a class="reference external" href="http://github.com/hackl/pybn">PyBN</a> modul to work!</p>
+</div>
+</div>
+<div class="section" id="abstract">
+<h2>1.2. Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Reinforced concrete structures constitute an important fraction of the
+building infrastructure. This infrastructure is aging and a large number of
+structures will exceed the prescribed service period in the next decades. The
+aging of concrete structures is often accompanied by correspondent
+deterioration mechanisms. One of the major deterioration mechanisms is the
+corrosion of the reinforcing steel, caused by chloride ions or carbon dioxide
+exposure.</p>
+<p>The decisions, made in connection to possible repair or renewals of these
+structures, have major implications on safety and cost efficiency in a
+societal dimension. Public authorities, entitled to administrate the
+infrastructure, are in need of schemes and methodologies that facilitate the
+optimal management of the already existing stock of structures, especially in
+regard to repair and maintenance planning.</p>
+<p>In this work a generic framework for a stochastic modeling of reinforced
+concrete deterioration caused by corrosion is presented. This framework
+couples existing probabilistic models for chloride and carbonation initiation
+with models for the propagation and the effects of corrosion. For this
+purpose, a combination of structural reliability analysis and Bayesian
+networks is used for the reliability assessment of the reinforced concrete
+structure. This approach allows to compute probabilities of rare events for
+complex structures in an efficient way to update the model with new
+information from measurements, monitoring and inspection results.</p>
+<p>This framework enables, for the first time, a holistic view of the current
+service life models, with corresponding sensitivity studies and finding
+optimal decisions for treating deteriorated reinforced concrete
+structures. The temporal evolvement of structures can also be represented and
+analyzed within this framework.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Keywords: Bayesian networks, corrosion, degradation, probabilistic
+modeling, probability, reinforced concrete, structural reliability
+analysis;</p>
+</div>
+</div>
+<div class="section" id="literature">
+<h2>1.3. Literature<a class="headerlink" href="#literature" title="Permalink to this headline">¶</a></h2>
+<p>CoRe is based on the Master&#8217;s thesis:</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Hackl Jürgen: &#8220;Generic Framework for Stochastic Modeling of Reinforced
+Concrete Deterioration Caused by Corrosion&#8221;. Master’s thesis, Norwegian
+University of Science and Technology, Trondheim, Norway, 2013.</p>
+</div>
+</div>
+<div class="section" id="getting-started">
+<h2>1.4. Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>This guide provides all the information needed to install CoRe, code a
+probabilistic model, run the sampler, save and visualize the results.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/Logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Introduction</a><ul>
+<li><a class="reference internal" href="#purpose">1.1. Purpose</a></li>
+<li><a class="reference internal" href="#abstract">1.2. Abstract</a></li>
+<li><a class="reference internal" href="#literature">1.3. Literature</a></li>
+<li><a class="reference internal" href="#getting-started">1.4. Getting started</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">PyRe documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="next chapter">2. Installation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/README.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="2. Installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="PyRe documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">CoRe 1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Juergen Hackl.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
